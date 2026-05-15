@@ -17,216 +17,109 @@ knitr::opts_chunk$set(
 )
 ```
 
-## Past data
+## Input data
 
-First, we explore the data in `ecodata::ppr` and how it compares to landings and primary production data elsewhere in `ecodata`. 
-
-### Plotting `ecodata::ppr`
-
-```{r}
-ecodata::plot_ppr(report = "NewEngland", varName = "pp")
-ecodata::plot_ppr(report = "MidAtlantic", varName = "pp")
-```
-
-The Ryther Index has units of catch per unit area.
-```{r}
-ecodata::plot_ppr(report = "NewEngland", varName = "ryther")
-ecodata::plot_ppr(report = "MidAtlantic", varName = "ryther")
-```
-
-It isn't clear why the units of the Fogarty Index are parts per thousand; the index is described as the ratio of the carbon in the catch over the carbon produced by primary production.
-```{r}
-ecodata::plot_ppr(report = "NewEngland", varName = "fogarty")
-ecodata::plot_ppr(report = "MidAtlantic", varName = "fogarty")
-```
-
-### Comparing to other `ecodata` objects
-
-#### Primary production
+### Primary production
 
 Regional primary production:
 
 ```{r}
-ecodata::plot_annual_chl_pp(
-  report = "NewEngland",
-  EPU = "GB",
-  varName = "pp",
-  plottype = "total"
-)
-
-ecodata::plot_annual_chl_pp(
-  report = "NewEngland",
-  EPU = "GOM",
-  varName = "pp",
-  plottype = "total"
-)
-
-ecodata::plot_annual_chl_pp(
-  report = "MidAtlantic",
-  EPU = "MAB",
-  varName = "pp",
-  plottype = "total"
-)
-```
-
-Plotting primary production from `ecodata::annual_chl_pp` and `ecodata::ppr` on the same graphs:
-
-```{r, fig.height = 8}
-combined_pp <- dplyr::full_join(
-  ecodata::ppr |> 
-    dplyr::filter(Var == "PP") |>
-    # dplyr::mutate(Source = "ecodata::ppr")|>
-  dplyr::select(-Units, -Var) |>
-    dplyr::rename(ppr = Value),
-  ecodata::annual_chl_pp |> 
+combined_pp <- ecodata::annual_chl_pp |> 
     dplyr::filter(Var == "PPD_ANNUAL_MTON") |>
     dplyr::mutate(Time = as.integer(gsub("A_", "", Time))#,
                   # Source = "ecodata::annual_chl_pp"
                   ) |>
   dplyr::select(-Units, -Var) |>
-    dplyr::rename(annual_chl_pp = Value)
-) |>
-  dplyr::group_by(EPU) |>
-  dplyr::mutate(annual_chl_pp = ifelse(is.na(annual_chl_pp), 
-                                       mean(annual_chl_pp, na.rm = TRUE), annual_chl_pp)) |>
-  dplyr::ungroup() |>
-  tidyr::pivot_longer(cols = c(ppr, annual_chl_pp), names_to = "Source", values_to = "Value") |>
-  dplyr::mutate(Source = dplyr::case_when(Source == "ppr" ~ "ecodata::ppr",
-                                          Source == "annual_chl_pp" ~ "ecodata::annual_chl_pp"))
+    dplyr::rename(annual_chl_pp = Value) 
 
 combined_pp |>
-  ggplot2::ggplot(ggplot2::aes(x = Time, y = Value, color = Source)) +
+  ggplot2::ggplot(ggplot2::aes(x = Time,
+                               y = annual_chl_pp,
+                               color = EPU)) +
   ggplot2::geom_point() +
   ggplot2::geom_line() +
   ggplot2::theme_bw() +
-  ggplot2::facet_wrap(~EPU, ncol = 1) +
-  ggplot2::theme(legend.position = "top")
+  ggplot2::theme(legend.position = "top") +
+  ggplot2::ylab("Regional primary production (MT carbon)")
 
 ```
 
-The data follow similar trends but don't match in values. 
-
-#### Landings
+### Landings
 
 Regional landings:
 
 ```{r}
-ecodata::plot_comdat(
-  report = "NewEngland",
-  varName = "landings",
-  plottype = "total"
-)
-
-ecodata::plot_comdat(
-  report = "MidAtlantic",
-  varName = "landings",
-  plottype = "total"
-)
-```
-
-Plotting landings from `ecodata::comdat` and `ecodata::ppr` on the same graphs -- multiplying the `ecodata::ppr` values by the regional area to produce total landings:
-
-```{r}
-gb_area <- ecodata::epu_sf |>
-  dplyr::filter(EPU == "GB") |>
-  sf::st_area() /
-  1e6 # convert to km2
-
-gom_area <- ecodata::epu_sf |>
-  dplyr::filter(EPU == "GOM") |>
-  sf::st_area() /
-  1e6 # convert to km2
-
-mab_area <- ecodata::epu_sf |>
-  dplyr::filter(EPU == "MAB") |>
-  sf::st_make_valid() |>
-  sf::st_area() /
-  1e6 # convert to km2
-```
-
-```{r, fig.height = 8}
-combined_landings <- dplyr::bind_rows(
-  ecodata::ppr |> 
-    dplyr::filter(Var == "Ryther") |>
-    dplyr::mutate(Source = "ecodata::ppr",
-                  Value = Value * dplyr::case_when(
-                    EPU == "GB" ~ gb_area,
-                    EPU == "GOM" ~ gom_area,
-                    EPU == "MAB" ~ mab_area
-                  )) |>
-    dplyr::mutate(Value = as.numeric(Value)),
-  ecodata::comdat |> 
+combined_landings <- ecodata::comdat |> 
     dplyr::filter(Var == "Landings") |>
-    dplyr::mutate(Source = "ecodata::comdat")
-)
+  dplyr::rename(landings = Value) |>
+  dplyr::select(-Var, -Units)
 
 combined_landings |>
   dplyr::filter(EPU %in% c("GB", "GOM", "MAB")) |>
-  ggplot2::ggplot(ggplot2::aes(x = Time, y = Value, color = Source)) +
+  ggplot2::ggplot(ggplot2::aes(x = Time, y = 
+                                 landings, 
+                               color = EPU)) +
   ggplot2::geom_point() +
   ggplot2::geom_line() +
   ggplot2::theme_bw() +
-  ggplot2::facet_wrap(~EPU, ncol = 1) +
-  ggplot2::theme(legend.position = "top")
+  ggplot2::theme(legend.position = "top") +
+  ggplot2::ylab("Regional landings (MT wet weight)")
 
 ```
-
-Again, trends are similar but the values don't match.
 
 ## Calculating the Primary Production Required
 
+PPR is calculated using the coefficients from Pauly and Christensen (1995) -- 10% transfer efficiency and mean trophic level of 3.5.
+
 ```{r, fig.height = 8}
-total_data <- dplyr::bind_rows(
-  combined_pp |> 
-    dplyr::mutate(Var = "PP"),
-  combined_landings |> 
-    dplyr::mutate(Var = "Landings")
-) |>
-  dplyr::select(-Units) |>
-  dplyr::mutate(Source = dplyr::case_when(
-    Source != "ecodata::ppr" ~ "ecodata::comdat and ecodata::annual_chl_pp",
-    TRUE ~ Source
-  )) |>
-  tidyr::pivot_wider(names_from = Var, values_from = Value) |>
+total_data <- dplyr::full_join(combined_pp, combined_landings) |>
+  dplyr::group_by(EPU) |>
+  dplyr::mutate(annual_chl_pp = ifelse(is.na(annual_chl_pp), 
+                                       mean(annual_chl_pp, na.rm = TRUE), annual_chl_pp)) |>
+  dplyr::ungroup() |>
   dplyr::mutate(
-    ppr = (Landings / 9) * (1 / 0.10)^2.5,
-    ratio = ppr / PP
+    ppr = (landings / 9) * (1 / 0.10)^2.5,
+    ratio = ppr / annual_chl_pp
   )
 ```
 
-First, simply plot landings and primary production on the same scale:
+First, simply plot PPR for the landings and primary production on the same scale:
 
 ```{r}
 total_data |>
     dplyr::filter(EPU %in% c("GB", "GOM", "MAB")) |>
-  tidyr::pivot_longer(cols = c(ppr, PP), names_to = "Var", values_to = "Value") |>
+  tidyr::pivot_longer(cols = c(ppr, annual_chl_pp), names_to = "Var", values_to = "Value") |>
   ggplot2::ggplot(ggplot2::aes(x = Time, y = Value, color = Var)) +
   ggplot2::geom_point() +
   ggplot2::geom_line() +
   ggplot2::theme_bw() +
-  ggplot2::facet_grid(rows = ggplot2::vars(EPU), 
-                      cols = ggplot2::vars(Source)) +
-  ggplot2::theme(legend.position = "top")
+  ggplot2::facet_grid(rows = ggplot2::vars(EPU)) +
+  ggplot2::theme(legend.position = "top") +
+  ggplot2::ylab("MT carbon")
 ```
 
-Using the coefficients from Pauly and Christensen (1995) -- 10% transfer efficiency and mean trophic level of 3.5
-
-Plot the ratio of primary production required:
+Plot the ratio of primary production required to total primary production:
 
 ```{r}
 total_data |>
     dplyr::filter(EPU %in% c("GB", "GOM", "MAB")) |>
-  ggplot2::ggplot(ggplot2::aes(x = Time, y = ratio, color = Source)) +
+  ggplot2::ggplot(ggplot2::aes(x = Time, y = ratio, color = EPU)) +
   ggplot2::geom_point() +
   ggplot2::geom_line() +
   ggplot2::theme_bw() +
-  ggplot2::facet_wrap(~EPU, ncol = 1) +
   ggplot2::theme(legend.position = "top")
 ```
 
 ### Assessing relative to some thresholds
 
-The difficulty with these calculations is that they rely on assumptions about transfer efficiency and trophic level. Additionally, the energetic accounting of how much primary production is "available" to be harvested as catch is complicated. Predators in the ecosystem need a certain amount of prey for their own diets. In addition to supporting the biomass caught and consumed, primary production also fuels the general functioning of the ecosystem, including supporting the biomass of non-harvested species and the metabolic needs of all organisms. A rough estimate is that up to [10% of primary production is sequestered in sediments](https://coast.noaa.gov/states/fast-facts/blue-carbon.html), reducing the amount available to organisms.
+The difficulty with these calculations is that they rely on assumptions about transfer efficiency and trophic level. Additionally, the energetic accounting of how much primary production is "available" to be harvested as catch is complicated. A simple accounting of where energy goes:
+
+```{r}
+#| out-width: "100%"
+knitr::include_graphics(here::here("data-raw/EOF energy accounting.png"))
+```
+
+Predators in the ecosystem need a certain amount of prey for their own diets. In addition to supporting the biomass caught and consumed, primary production also fuels the general functioning of the ecosystem, including supporting the biomass of non-harvested species and the metabolic needs of all organisms. A rough estimate is that up to [10% of primary production is sequestered in sediments](https://coast.noaa.gov/states/fast-facts/blue-carbon.html), reducing the amount available to organisms.
 
 Can we estimate the biomass needed for predation by comparing Fmsy to M?
 
@@ -269,8 +162,7 @@ Let's see how we've done relative to thresholds of 0.25 and 0.5:
 
 ```{r}
 total_data |>
-    dplyr::filter(EPU %in% c("GB", "GOM", "MAB"),
-                  Source != "ecodata::ppr") |>
+    dplyr::filter(EPU %in% c("GB", "GOM", "MAB")) |>
   ggplot2::ggplot(ggplot2::aes(x = Time, y = ratio, color = EPU)) +
   ggplot2::geom_point() +
   ggplot2::geom_line() +
@@ -280,9 +172,55 @@ total_data |>
   ggplot2::theme(legend.position = "top")
 ```
 
-Not great! Georges Bank was unequivocally overfished in the 1970s (discards were probably lower then, but still -- PPR over 1 is not sustainable). The Mid-Atlantic has actually sustained the highest PPR over time, though recent declines could signify stress in the ecosystem. 
+Not great! Georges Bank was unequivocally overfished in the 1970s (discards were probably lower then, but still -- PPR over 1 is not sustainable). The Mid-Atlantic has actually sustained the highest PPR over time, and recent declines could signify stress in the ecosystem (e.g., landing are being restricted because productivity is falling). 
 
-What could this data mean for the future? It looks like the Gulf of Maine and Goerges Bank could potentially support more removals, though Georges Bank in particular may need more time to rebound from past overfishing. More research is needed to understand the additional metabolic energetic requirements and to determine the time scale of "bounce back" after overexploitation.
+What could this data mean for the future? It looks like the Gulf of Maine and Georges Bank could potentially support more removals, though Georges Bank in particular may need more time to rebound from past overfishing. More research is needed to understand the additional metabolic energetic requirements and to determine the time scale of "bounce back" after overexploitation.
+
+### Assessing cumulative impact on system energy
+
+The system stores energy as standing biomass. When we harvest too much biomass, we are reducing the amount of energy stored in the system; if we are harvesting more than the system can replenish, we are depleting the energy stored in the system, and eventually we will have no energy left to harvest. 
+
+Let's create a rough estimate of the energy stored in the system, relative to the first year in the time series. We can calculate this as the cumulative sum of how much energy was "overdrawn" per year. In other words, if 25% of the primary production is available for extraction through catch (according to the rough thresholds discussed above), then we are "overdrawing" when we take more than 25% of primary production in a given year. So we first calibrate our ratio by subtracting 0.25, and then take the cumulative sum.
+
+```{r}
+cumulative_energy <- total_data |>
+    dplyr::filter(EPU %in% c("GB", "GOM", "MAB")) |>
+  dplyr::arrange(EPU, Time) |>
+  dplyr::mutate(overdrawn = ratio - 0.25) |>
+  dplyr::group_by(EPU) |>
+  dplyr::mutate(cumulative_overdrawn = cumsum(overdrawn)) 
+
+cumulative_energy |>
+  ggplot2::ggplot(ggplot2::aes(x = Time, 
+                               y = cumulative_overdrawn, 
+                               color = EPU)) +
+  ggplot2::geom_point() +
+  ggplot2::geom_line() +
+  ggplot2::geom_hline(yintercept = 0, linetype = "dashed", color = "black") +
+  ggplot2::theme_bw() +
+  ggplot2::theme(legend.position = "top") +
+  ggplot2::ylab("Cumulative overdrawn energy (relative to 1964)")
+```
+
+Thoughts on looking at this graph... 
+
+```{r}
+test <- cumulative_energy |>
+  dplyr::filter(EPU == "GB",
+                Time > 1976)
+
+model <- lm(cumulative_overdrawn ~ Time, data = test)
+```
+
+First, Georges Bank had a cumulative extraction of more than 9x the annual primary production in the 1970s. Even though landings have been reduced since the 1970s, there is still a current deficit of approximately 7x the annual primary production. Looking at the slope from 1977 to present, the cumulative energy deficit is being repaid at `r -coef(model)[2] |> round(digits = 2)` per year, which means it will take until the year `r (1977 + -coef(model)[1]/coef(model)[2]) |> round(digits = 0)` to return to the biomass that the system had in 1964.
+
+Second, the amount of extraction in the Gulf of Maine and the Mid Atlantic Bight in the 1960s appears to have been sustainable, in that we were not taking more biomass than was available each year through primary production. However, both regions have slowly built up a cumulative energy deficit over time, with the Mid Atlantic Bight now having the largest cumulative energy deficit out of all three regions, larger even than the debt that Georges Bank experienced during the crash of the groundfish stocks in the 1970s. The implications for the Mid Atlantic Bight could be concerning. 
+
+Even though these concepts are expressed relative to annual primary production, it would actually take 4 years for an amount of carbon equivalent to the annual primary production to be added back to the system. That's because 75% of primary production goes to metabolism, predation, and sequestration, so only 25% of the annual primary production is able to be stored in organism biomass. 
+
+But does having this type of energy debt really matter? On one hand, as long as primary productivity continues, some portion of that productivity can be harvested. On the other hand, the energy stored in secondary production represents a suite of organisms of multiple ages classes that combine into a diverse ecosystem; the structure and function of a system with low energy debt may be different from that of a system with high energy debt. The organisms that we can harvest under high and low energy debt regimes may not be equivalently desirable.
+
+How does this mesh with the guild biomass information that we present in the SOE? In all guilds and all regions, guild biomass is approximately equivalent to or higher than values from the 1970s (except for Georges Bank piscivores in the spring). So we are not seeing evidence of a depleted standing stock from the survey data. Is it possible that something is off in our survey analysis?
 
 ### Plotting over a range of coefficients
 
@@ -299,19 +237,18 @@ return_ppr <- function(landings, pp, te, tl) {
 total_data2 <- total_data |>
     dplyr::filter(EPU %in% c("GB", "GOM", "MAB")) |>
   dplyr::mutate(
-    ratio_te5_tl3.5 = return_ppr(Landings, PP, te = 0.05, tl = 3.5),
-    ratio_te5_tl4 = return_ppr(Landings, PP, te = 0.05, tl = 4),
-    ratio_te5_tl3 = return_ppr(Landings, PP, te = 0.05, tl = 3),
-    ratio_te10_tl3.5 = return_ppr(Landings, PP, te = 0.1, tl = 3.5),
-    ratio_te10_tl4 = return_ppr(Landings, PP, te = 0.1, tl = 4),
-    ratio_te10_tl3 = return_ppr(Landings, PP, te = 0.1, tl = 3),
-    ratio_te15_tl3.5 = return_ppr(Landings, PP, te = 0.15, tl = 3.5),
-    ratio_te15_tl4 = return_ppr(Landings, PP, te = 0.15, tl = 4),
-    ratio_te15_tl3 = return_ppr(Landings, PP, te = 0.15, tl = 3),
+    ratio_te5_tl3.5 = return_ppr(landings, annual_chl_pp, te = 0.05, tl = 3.5),
+    ratio_te5_tl4 = return_ppr(landings, annual_chl_pp, te = 0.05, tl = 4),
+    ratio_te5_tl3 = return_ppr(landings, annual_chl_pp, te = 0.05, tl = 3),
+    ratio_te10_tl3.5 = return_ppr(landings, annual_chl_pp, te = 0.1, tl = 3.5),
+    ratio_te10_tl4 = return_ppr(landings, annual_chl_pp, te = 0.1, tl = 4),
+    ratio_te10_tl3 = return_ppr(landings, annual_chl_pp, te = 0.1, tl = 3),
+    ratio_te15_tl3.5 = return_ppr(landings, annual_chl_pp, te = 0.15, tl = 3.5),
+    ratio_te15_tl4 = return_ppr(landings, annual_chl_pp, te = 0.15, tl = 4),
+    ratio_te15_tl3 = return_ppr(landings, annual_chl_pp, te = 0.15, tl = 3),
   ) |>
   tidyr::pivot_longer(cols = starts_with("ratio"), names_to = "method", values_to = "ratio") |>
-  dplyr::filter(method != "ratio",
-                Source != "ecodata::ppr") |>
+  dplyr::filter(method != "ratio") |>
   dplyr::mutate(transfer_efficiency = dplyr::case_when(
     grepl("te5", method) ~ "5%",
     grepl("te10", method) ~ "10%",

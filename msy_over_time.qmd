@@ -1,0 +1,50 @@
+---
+title: "MSY over time"
+format: html
+---
+
+## MSY exploration
+
+How have MSY reference points changed over time?
+
+Pull from StockSmart:
+
+```{r}
+data <- stocksmart::stockAssessmentSummary |>
+  janitor::clean_names() |>
+  dplyr::filter(stringr::str_detect(regional_ecosystem, "Northeast")) |>
+  dplyr::select(stock_name, jurisdiction, assessment_year, bmsy, bmsy_basis, fmsy, fmsy_basis)
+```
+
+```{r}
+data2 <- data |>
+  dplyr::group_by(stock_name, bmsy_basis) |>
+  dplyr::mutate(bmsy_basis = stringr::str_to_lower(bmsy_basis)) |>
+  dplyr::mutate(multiple_basis = length(unique(bmsy_basis)) > 1,
+                multiple_assessment = dplyr::n() > 1) |>
+  dplyr::filter(#multiple_basis == FALSE,
+                multiple_assessment == TRUE,
+                !is.na(bmsy)) 
+
+plt_msy <- function(data) {
+  plt <- data |>
+  ggplot2::ggplot(ggplot2::aes(x = assessment_year, 
+                               y = bmsy,
+                               color = bmsy_basis)) +
+  ggplot2::geom_line() +
+  ggplot2::geom_point() +
+  ggplot2::theme_bw() +
+  ggplot2::theme(legend.position = "bottom") +
+    ggplot2::ggtitle(unique(data$stock_name)) +
+    ggplot2::ylim(c(0, NA))
+  
+  print(plt)
+}
+```
+
+```{r}
+for(i in unique(data2$stock_name)) {
+  plt_msy(data2 |>
+            dplyr::filter(stock_name == i))
+}
+```

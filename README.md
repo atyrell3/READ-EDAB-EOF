@@ -1,7 +1,10 @@
 
 ## Ecosystem Overfishing
 
-[Draft exploration](https://atyrell3.github.io/READ-EDAB-EOF/overview_eof.html)
+- [Draft exploration](https://atyrell3.github.io/READ-EDAB-EOF/overview_eof.html)
+- [Comparison to old EOF calculations](https://atyrell3.github.io/READ-EDAB-EOF/eof_ecodata.html)
+- [Bmsy changes over time](https://atyrell3.github.io/READ-EDAB-EOF/msy_over_time.html)
+
 
 ----
 
