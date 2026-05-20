@@ -176,6 +176,607 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </div>
 </div>
 </section>
+<section id="trophic-levels" class="level3">
+<h3 class="anchored" data-anchor-id="trophic-levels">Trophic levels</h3>
+<p>Trophic level by EPU is provided in Max’s Rpath models.</p>
+<div class="cell">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb4"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>gb_tl <span class="ot">&lt;-</span> neusRpath<span class="sc">:::</span><span class="fu">get_trophic_level</span>(neusRpath<span class="sc">::</span>GB, <span class="at">epu_name =</span> <span class="st">"GB"</span>)</span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>gom_tl <span class="ot">&lt;-</span> neusRpath<span class="sc">:::</span><span class="fu">get_trophic_level</span>(neusRpath<span class="sc">::</span>GOM, <span class="at">epu_name =</span> <span class="st">"GOM"</span>)</span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>mab_tl <span class="ot">&lt;-</span> neusRpath<span class="sc">:::</span><span class="fu">get_trophic_level</span>(neusRpath<span class="sc">::</span>MAB, <span class="at">epu_name =</span> <span class="st">"MAB"</span>)</span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a>trophic_data <span class="ot">&lt;-</span> dplyr<span class="sc">::</span><span class="fu">bind_rows</span>(gb_tl, gom_tl, mab_tl) <span class="sc">|&gt;</span></span>
+<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a>  <span class="co"># dplyr::arrange(EPU, Trophic_Level)</span></span>
+<span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a>  tidyr<span class="sc">::</span><span class="fu">pivot_wider</span>(<span class="at">names_from =</span> EPU, <span class="at">values_from =</span> Trophic_Level) <span class="sc">|&gt;</span></span>
+<span id="cb4-8"><a href="#cb4-8" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">rowwise</span>() <span class="sc">|&gt;</span></span>
+<span id="cb4-9"><a href="#cb4-9" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">mutate</span>(<span class="at">mean =</span> <span class="fu">mean</span>(dplyr<span class="sc">::</span><span class="fu">c_across</span>(<span class="fu">c</span>(GB, GOM, MAB)), <span class="at">na.rm =</span> <span class="cn">TRUE</span>)) <span class="sc">|&gt;</span></span>
+<span id="cb4-10"><a href="#cb4-10" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">ungroup</span>() <span class="sc">|&gt;</span></span>
+<span id="cb4-11"><a href="#cb4-11" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">arrange</span>(mean)</span>
+<span id="cb4-12"><a href="#cb4-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-13"><a href="#cb4-13" aria-hidden="true" tabindex="-1"></a>trophic_data <span class="sc">|&gt;</span></span>
+<span id="cb4-14"><a href="#cb4-14" aria-hidden="true" tabindex="-1"></a>  <span class="co"># dplyr::select(-mean) |&gt;</span></span>
+<span id="cb4-15"><a href="#cb4-15" aria-hidden="true" tabindex="-1"></a>  knitr<span class="sc">::</span><span class="fu">kable</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output-display">
+<table class="caption-top table table-sm table-striped small">
+<thead>
+<tr class="header">
+<th style="text-align: left;">Species</th>
+<th style="text-align: right;">GB</th>
+<th style="text-align: right;">GOM</th>
+<th style="text-align: right;">MAB</th>
+<th style="text-align: right;">mean</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">Phytoplankton</td>
+<td style="text-align: right;">1.000000</td>
+<td style="text-align: right;">1.000000</td>
+<td style="text-align: right;">1.000000</td>
+<td style="text-align: right;">1.000000</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Detritus</td>
+<td style="text-align: right;">1.000000</td>
+<td style="text-align: right;">1.000000</td>
+<td style="text-align: right;">1.000000</td>
+<td style="text-align: right;">1.000000</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Bacteria</td>
+<td style="text-align: right;">2.000000</td>
+<td style="text-align: right;">2.000000</td>
+<td style="text-align: right;">2.000000</td>
+<td style="text-align: right;">2.000000</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">OceanQuahog</td>
+<td style="text-align: right;">2.080000</td>
+<td style="text-align: right;">NA</td>
+<td style="text-align: right;">NA</td>
+<td style="text-align: right;">2.080000</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">SurfClam</td>
+<td style="text-align: right;">2.080000</td>
+<td style="text-align: right;">NA</td>
+<td style="text-align: right;">NA</td>
+<td style="text-align: right;">2.080000</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">AtlScallop</td>
+<td style="text-align: right;">2.080000</td>
+<td style="text-align: right;">2.118810</td>
+<td style="text-align: right;">2.080000</td>
+<td style="text-align: right;">2.092937</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">SmCopepods</td>
+<td style="text-align: right;">2.183313</td>
+<td style="text-align: right;">2.178565</td>
+<td style="text-align: right;">2.258222</td>
+<td style="text-align: right;">2.206700</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Microzooplankton</td>
+<td style="text-align: right;">2.318182</td>
+<td style="text-align: right;">2.325803</td>
+<td style="text-align: right;">2.333079</td>
+<td style="text-align: right;">2.325688</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Macrobenthos</td>
+<td style="text-align: right;">2.362054</td>
+<td style="text-align: right;">2.456037</td>
+<td style="text-align: right;">2.353789</td>
+<td style="text-align: right;">2.390627</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">LgCopepods</td>
+<td style="text-align: right;">2.560390</td>
+<td style="text-align: right;">2.416550</td>
+<td style="text-align: right;">2.478886</td>
+<td style="text-align: right;">2.485275</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Megabenthos</td>
+<td style="text-align: right;">3.015722</td>
+<td style="text-align: right;">2.681287</td>
+<td style="text-align: right;">2.472214</td>
+<td style="text-align: right;">2.723074</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">OtherShrimps</td>
+<td style="text-align: right;">2.633962</td>
+<td style="text-align: right;">2.893465</td>
+<td style="text-align: right;">2.686424</td>
+<td style="text-align: right;">2.737950</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Micronekton</td>
+<td style="text-align: right;">2.932358</td>
+<td style="text-align: right;">2.849715</td>
+<td style="text-align: right;">2.877963</td>
+<td style="text-align: right;">2.886679</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">NShrimp</td>
+<td style="text-align: right;">NA</td>
+<td style="text-align: right;">2.893465</td>
+<td style="text-align: right;">NA</td>
+<td style="text-align: right;">2.893465</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Krill</td>
+<td style="text-align: right;">2.932358</td>
+<td style="text-align: right;">2.849715</td>
+<td style="text-align: right;">2.908154</td>
+<td style="text-align: right;">2.896743</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">AmLobster</td>
+<td style="text-align: right;">3.005151</td>
+<td style="text-align: right;">3.146498</td>
+<td style="text-align: right;">2.969679</td>
+<td style="text-align: right;">3.040443</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">GelZooplankton</td>
+<td style="text-align: right;">3.113652</td>
+<td style="text-align: right;">3.081594</td>
+<td style="text-align: right;">3.249320</td>
+<td style="text-align: right;">3.148188</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">SmPelagics</td>
+<td style="text-align: right;">3.308538</td>
+<td style="text-align: right;">3.171305</td>
+<td style="text-align: right;">3.208577</td>
+<td style="text-align: right;">3.229473</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">AtlMenhaden</td>
+<td style="text-align: right;">NA</td>
+<td style="text-align: right;">NA</td>
+<td style="text-align: right;">3.260958</td>
+<td style="text-align: right;">3.260958</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Mesopelagics</td>
+<td style="text-align: right;">3.362054</td>
+<td style="text-align: right;">3.374620</td>
+<td style="text-align: right;">3.388538</td>
+<td style="text-align: right;">3.375071</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">WitchFlounder</td>
+<td style="text-align: right;">3.373872</td>
+<td style="text-align: right;">3.471207</td>
+<td style="text-align: right;">NA</td>
+<td style="text-align: right;">3.422540</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">OceanPout</td>
+<td style="text-align: right;">3.441100</td>
+<td style="text-align: right;">3.465008</td>
+<td style="text-align: right;">3.368711</td>
+<td style="text-align: right;">3.424939</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Scup</td>
+<td style="text-align: right;">3.378294</td>
+<td style="text-align: right;">NA</td>
+<td style="text-align: right;">3.476517</td>
+<td style="text-align: right;">3.427405</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">WinterFlounder</td>
+<td style="text-align: right;">3.433346</td>
+<td style="text-align: right;">3.494027</td>
+<td style="text-align: right;">3.377382</td>
+<td style="text-align: right;">3.434918</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Other Dredge</td>
+<td style="text-align: right;">3.309365</td>
+<td style="text-align: right;">3.681498</td>
+<td style="text-align: right;">3.375435</td>
+<td style="text-align: right;">3.455433</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">AtlCroaker</td>
+<td style="text-align: right;">NA</td>
+<td style="text-align: right;">NA</td>
+<td style="text-align: right;">3.464684</td>
+<td style="text-align: right;">3.464684</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">SmFlatfishes</td>
+<td style="text-align: right;">3.409660</td>
+<td style="text-align: right;">3.585291</td>
+<td style="text-align: right;">3.415225</td>
+<td style="text-align: right;">3.470059</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">YTFlounder</td>
+<td style="text-align: right;">3.532325</td>
+<td style="text-align: right;">3.510438</td>
+<td style="text-align: right;">3.381731</td>
+<td style="text-align: right;">3.474831</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">AmPlaice</td>
+<td style="text-align: right;">3.597304</td>
+<td style="text-align: right;">3.510559</td>
+<td style="text-align: right;">NA</td>
+<td style="text-align: right;">3.553932</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Clam Dredge</td>
+<td style="text-align: right;">3.082455</td>
+<td style="text-align: right;">3.681287</td>
+<td style="text-align: right;">3.900627</td>
+<td style="text-align: right;">3.554790</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Haddock</td>
+<td style="text-align: right;">3.524854</td>
+<td style="text-align: right;">3.655771</td>
+<td style="text-align: right;">NA</td>
+<td style="text-align: right;">3.590313</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">AtlMackerel</td>
+<td style="text-align: right;">3.732652</td>
+<td style="text-align: right;">3.653598</td>
+<td style="text-align: right;">3.471674</td>
+<td style="text-align: right;">3.619308</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">LittleSkate</td>
+<td style="text-align: right;">3.658749</td>
+<td style="text-align: right;">3.760183</td>
+<td style="text-align: right;">3.544999</td>
+<td style="text-align: right;">3.654644</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">RiverHerring</td>
+<td style="text-align: right;">3.767309</td>
+<td style="text-align: right;">3.617926</td>
+<td style="text-align: right;">3.584465</td>
+<td style="text-align: right;">3.656566</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">HMS Fleet</td>
+<td style="text-align: right;">4.653306</td>
+<td style="text-align: right;">5.351437</td>
+<td style="text-align: right;">1.000000</td>
+<td style="text-align: right;">3.668248</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">AtlHerring</td>
+<td style="text-align: right;">3.569948</td>
+<td style="text-align: right;">3.767350</td>
+<td style="text-align: right;">NA</td>
+<td style="text-align: right;">3.668649</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">SouthernDemersals</td>
+<td style="text-align: right;">3.731375</td>
+<td style="text-align: right;">NA</td>
+<td style="text-align: right;">3.633901</td>
+<td style="text-align: right;">3.682638</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">OtherDemersals</td>
+<td style="text-align: right;">3.838845</td>
+<td style="text-align: right;">3.624313</td>
+<td style="text-align: right;">3.703968</td>
+<td style="text-align: right;">3.722375</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Butterfish</td>
+<td style="text-align: right;">3.705983</td>
+<td style="text-align: right;">3.872581</td>
+<td style="text-align: right;">3.773587</td>
+<td style="text-align: right;">3.784050</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Loligo</td>
+<td style="text-align: right;">3.849966</td>
+<td style="text-align: right;">3.766669</td>
+<td style="text-align: right;">3.742622</td>
+<td style="text-align: right;">3.786419</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Illex</td>
+<td style="text-align: right;">3.905027</td>
+<td style="text-align: right;">3.766669</td>
+<td style="text-align: right;">3.770572</td>
+<td style="text-align: right;">3.814089</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">OtherCephalopods</td>
+<td style="text-align: right;">3.905027</td>
+<td style="text-align: right;">3.766669</td>
+<td style="text-align: right;">3.770572</td>
+<td style="text-align: right;">3.814089</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">OtherSkates</td>
+<td style="text-align: right;">3.663781</td>
+<td style="text-align: right;">4.012041</td>
+<td style="text-align: right;">3.839762</td>
+<td style="text-align: right;">3.838528</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">BlackSeaBass</td>
+<td style="text-align: right;">3.967472</td>
+<td style="text-align: right;">3.947184</td>
+<td style="text-align: right;">3.676659</td>
+<td style="text-align: right;">3.863772</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">SmoothDogfish</td>
+<td style="text-align: right;">4.016955</td>
+<td style="text-align: right;">3.964905</td>
+<td style="text-align: right;">3.614019</td>
+<td style="text-align: right;">3.865293</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">WinterSkate</td>
+<td style="text-align: right;">3.904391</td>
+<td style="text-align: right;">4.001335</td>
+<td style="text-align: right;">3.741776</td>
+<td style="text-align: right;">3.882500</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Redfish</td>
+<td style="text-align: right;">3.771585</td>
+<td style="text-align: right;">3.998903</td>
+<td style="text-align: right;">NA</td>
+<td style="text-align: right;">3.885244</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Windowpane</td>
+<td style="text-align: right;">3.936858</td>
+<td style="text-align: right;">3.869096</td>
+<td style="text-align: right;">3.870774</td>
+<td style="text-align: right;">3.892243</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">RedHake</td>
+<td style="text-align: right;">3.857811</td>
+<td style="text-align: right;">4.050421</td>
+<td style="text-align: right;">3.802729</td>
+<td style="text-align: right;">3.903653</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Scallop Dredge</td>
+<td style="text-align: right;">3.935324</td>
+<td style="text-align: right;">NA</td>
+<td style="text-align: right;">3.882363</td>
+<td style="text-align: right;">3.908844</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">BaleenWhales</td>
+<td style="text-align: right;">4.138996</td>
+<td style="text-align: right;">4.069637</td>
+<td style="text-align: right;">4.075690</td>
+<td style="text-align: right;">4.094774</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Weakfish</td>
+<td style="text-align: right;">NA</td>
+<td style="text-align: right;">NA</td>
+<td style="text-align: right;">4.097021</td>
+<td style="text-align: right;">4.097021</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Other</td>
+<td style="text-align: right;">NA</td>
+<td style="text-align: right;">4.758121</td>
+<td style="text-align: right;">3.441865</td>
+<td style="text-align: right;">4.099993</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Barndoor</td>
+<td style="text-align: right;">4.190274</td>
+<td style="text-align: right;">4.037848</td>
+<td style="text-align: right;">NA</td>
+<td style="text-align: right;">4.114061</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Pollock</td>
+<td style="text-align: right;">4.096645</td>
+<td style="text-align: right;">4.237621</td>
+<td style="text-align: right;">NA</td>
+<td style="text-align: right;">4.167133</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Cod</td>
+<td style="text-align: right;">4.145918</td>
+<td style="text-align: right;">4.387166</td>
+<td style="text-align: right;">3.974108</td>
+<td style="text-align: right;">4.169064</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">SpinyDogfish</td>
+<td style="text-align: right;">4.250792</td>
+<td style="text-align: right;">4.389173</td>
+<td style="text-align: right;">3.986730</td>
+<td style="text-align: right;">4.208898</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">SeaBirds</td>
+<td style="text-align: right;">4.335669</td>
+<td style="text-align: right;">4.321566</td>
+<td style="text-align: right;">4.084295</td>
+<td style="text-align: right;">4.247177</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">PurseSeine</td>
+<td style="text-align: right;">NA</td>
+<td style="text-align: right;">NA</td>
+<td style="text-align: right;">4.260958</td>
+<td style="text-align: right;">4.260958</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">SilverHake</td>
+<td style="text-align: right;">4.412718</td>
+<td style="text-align: right;">4.267944</td>
+<td style="text-align: right;">4.105408</td>
+<td style="text-align: right;">4.262023</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Fourspot</td>
+<td style="text-align: right;">4.238478</td>
+<td style="text-align: right;">4.229419</td>
+<td style="text-align: right;">4.416911</td>
+<td style="text-align: right;">4.294936</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Cusk</td>
+<td style="text-align: right;">NA</td>
+<td style="text-align: right;">4.318015</td>
+<td style="text-align: right;">NA</td>
+<td style="text-align: right;">4.318015</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">HMS</td>
+<td style="text-align: right;">4.352927</td>
+<td style="text-align: right;">4.339670</td>
+<td style="text-align: right;">4.276627</td>
+<td style="text-align: right;">4.323074</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Trap</td>
+<td style="text-align: right;">4.330798</td>
+<td style="text-align: right;">4.101466</td>
+<td style="text-align: right;">4.578976</td>
+<td style="text-align: right;">4.337080</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">AtlHalibut</td>
+<td style="text-align: right;">NA</td>
+<td style="text-align: right;">4.440707</td>
+<td style="text-align: right;">NA</td>
+<td style="text-align: right;">4.440707</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">OtherPelagics</td>
+<td style="text-align: right;">4.689691</td>
+<td style="text-align: right;">4.555107</td>
+<td style="text-align: right;">4.223054</td>
+<td style="text-align: right;">4.489284</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Bluefish</td>
+<td style="text-align: right;">4.692466</td>
+<td style="text-align: right;">NA</td>
+<td style="text-align: right;">4.458649</td>
+<td style="text-align: right;">4.575557</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">WhiteHake</td>
+<td style="text-align: right;">4.723828</td>
+<td style="text-align: right;">4.532785</td>
+<td style="text-align: right;">NA</td>
+<td style="text-align: right;">4.628306</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">SummerFlounder</td>
+<td style="text-align: right;">4.766620</td>
+<td style="text-align: right;">4.823491</td>
+<td style="text-align: right;">4.352038</td>
+<td style="text-align: right;">4.647383</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Pinnipeds</td>
+<td style="text-align: right;">4.717434</td>
+<td style="text-align: right;">4.772076</td>
+<td style="text-align: right;">NA</td>
+<td style="text-align: right;">4.744755</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Odontocetes</td>
+<td style="text-align: right;">4.823129</td>
+<td style="text-align: right;">4.843218</td>
+<td style="text-align: right;">4.639289</td>
+<td style="text-align: right;">4.768545</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Goosefish</td>
+<td style="text-align: right;">4.831592</td>
+<td style="text-align: right;">4.937234</td>
+<td style="text-align: right;">4.558456</td>
+<td style="text-align: right;">4.775761</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Sharks</td>
+<td style="text-align: right;">4.920587</td>
+<td style="text-align: right;">4.966994</td>
+<td style="text-align: right;">4.686325</td>
+<td style="text-align: right;">4.857969</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">LG Mesh</td>
+<td style="text-align: right;">4.866362</td>
+<td style="text-align: right;">4.997942</td>
+<td style="text-align: right;">4.790375</td>
+<td style="text-align: right;">4.884893</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">SM Mesh</td>
+<td style="text-align: right;">4.912816</td>
+<td style="text-align: right;">4.931989</td>
+<td style="text-align: right;">4.852638</td>
+<td style="text-align: right;">4.899147</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Pelagic</td>
+<td style="text-align: right;">4.883345</td>
+<td style="text-align: right;">4.958554</td>
+<td style="text-align: right;">5.195321</td>
+<td style="text-align: right;">5.012407</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Fixed Gear</td>
+<td style="text-align: right;">5.023484</td>
+<td style="text-align: right;">5.244842</td>
+<td style="text-align: right;">4.871390</td>
+<td style="text-align: right;">5.046572</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Recreational</td>
+<td style="text-align: right;">NA</td>
+<td style="text-align: right;">NA</td>
+<td style="text-align: right;">5.250089</td>
+<td style="text-align: right;">5.250089</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<div class="cell">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb5"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>upper_tl <span class="ot">&lt;-</span> trophic_data <span class="sc">|&gt;</span></span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">filter</span>(Species <span class="sc">==</span> <span class="st">"Goosefish"</span>) <span class="sc">|&gt;</span></span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">pull</span>(mean) <span class="sc">|&gt;</span> </span>
+<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">round</span>(<span class="at">digits =</span> <span class="dv">2</span>)</span>
+<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a>lower_tl <span class="ot">&lt;-</span> trophic_data <span class="sc">|&gt;</span></span>
+<span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">filter</span>(Species <span class="sc">==</span> <span class="st">"OceanQuahog"</span>) <span class="sc">|&gt;</span></span>
+<span id="cb5-7"><a href="#cb5-7" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">pull</span>(mean) <span class="sc">|&gt;</span> </span>
+<span id="cb5-8"><a href="#cb5-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">round</span>(<span class="at">digits =</span> <span class="dv">2</span>)</span>
+<span id="cb5-9"><a href="#cb5-9" aria-hidden="true" tabindex="-1"></a>mean_tl <span class="ot">&lt;-</span> <span class="fu">mean</span>(<span class="fu">c</span>(upper_tl, lower_tl)) <span class="sc">|&gt;</span> </span>
+<span id="cb5-10"><a href="#cb5-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">round</span>(<span class="at">digits =</span> <span class="dv">2</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+</div>
+<p>The harvested species with the lowest trophic level is ocean quahog, with a trophic level of 2.08. The harvested species with the highest trophic level is goosefish, with a trophic level of 4.78. If we average the two, we get a mean trophic level of 3.43. Let’s try applying these ballpark numbers in our analyses below.</p>
+</section>
 </section>
 <section id="calculating-the-primary-production-required" class="level2">
 <h2 class="anchored" data-anchor-id="calculating-the-primary-production-required">Calculating the Primary Production Required</h2>
@@ -183,36 +784,36 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <div class="cell">
 <details class="code-fold">
 <summary>Code</summary>
-<div class="sourceCode cell-code" id="cb4"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>total_data <span class="ot">&lt;-</span> dplyr<span class="sc">::</span><span class="fu">full_join</span>(combined_pp, combined_landings) <span class="sc">|&gt;</span></span>
-<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">group_by</span>(EPU) <span class="sc">|&gt;</span></span>
-<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">mutate</span>(<span class="at">annual_chl_pp =</span> <span class="fu">ifelse</span>(<span class="fu">is.na</span>(annual_chl_pp), </span>
-<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a>                                       <span class="fu">mean</span>(annual_chl_pp, <span class="at">na.rm =</span> <span class="cn">TRUE</span>), annual_chl_pp)) <span class="sc">|&gt;</span></span>
-<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">ungroup</span>() <span class="sc">|&gt;</span></span>
-<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">mutate</span>(</span>
-<span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a>    <span class="at">ppr =</span> (landings <span class="sc">/</span> <span class="dv">9</span>) <span class="sc">*</span> (<span class="dv">1</span> <span class="sc">/</span> <span class="fl">0.10</span>)<span class="sc">^</span><span class="fl">2.5</span>,</span>
-<span id="cb4-8"><a href="#cb4-8" aria-hidden="true" tabindex="-1"></a>    <span class="at">ratio =</span> ppr <span class="sc">/</span> annual_chl_pp</span>
-<span id="cb4-9"><a href="#cb4-9" aria-hidden="true" tabindex="-1"></a>  )</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb6"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>total_data <span class="ot">&lt;-</span> dplyr<span class="sc">::</span><span class="fu">full_join</span>(combined_pp, combined_landings) <span class="sc">|&gt;</span></span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">group_by</span>(EPU) <span class="sc">|&gt;</span></span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">mutate</span>(<span class="at">annual_chl_pp =</span> <span class="fu">ifelse</span>(<span class="fu">is.na</span>(annual_chl_pp), </span>
+<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a>                                       <span class="fu">mean</span>(annual_chl_pp, <span class="at">na.rm =</span> <span class="cn">TRUE</span>), annual_chl_pp)) <span class="sc">|&gt;</span></span>
+<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">ungroup</span>() <span class="sc">|&gt;</span></span>
+<span id="cb6-6"><a href="#cb6-6" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">mutate</span>(</span>
+<span id="cb6-7"><a href="#cb6-7" aria-hidden="true" tabindex="-1"></a>    <span class="at">ppr =</span> (landings <span class="sc">/</span> <span class="dv">9</span>) <span class="sc">*</span> (<span class="dv">1</span> <span class="sc">/</span> <span class="fl">0.10</span>)<span class="sc">^</span><span class="fl">2.5</span>,</span>
+<span id="cb6-8"><a href="#cb6-8" aria-hidden="true" tabindex="-1"></a>    <span class="at">ratio =</span> ppr <span class="sc">/</span> annual_chl_pp</span>
+<span id="cb6-9"><a href="#cb6-9" aria-hidden="true" tabindex="-1"></a>  )</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 </div>
 <p>First, simply plot PPR for the landings and primary production on the same scale:</p>
 <div class="cell">
 <details class="code-fold">
 <summary>Code</summary>
-<div class="sourceCode cell-code" id="cb5"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>total_data <span class="sc">|&gt;</span></span>
-<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>    dplyr<span class="sc">::</span><span class="fu">filter</span>(EPU <span class="sc">%in%</span> <span class="fu">c</span>(<span class="st">"GB"</span>, <span class="st">"GOM"</span>, <span class="st">"MAB"</span>)) <span class="sc">|&gt;</span></span>
-<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>  tidyr<span class="sc">::</span><span class="fu">pivot_longer</span>(<span class="at">cols =</span> <span class="fu">c</span>(ppr, annual_chl_pp), <span class="at">names_to =</span> <span class="st">"Var"</span>, <span class="at">values_to =</span> <span class="st">"Value"</span>) <span class="sc">|&gt;</span></span>
-<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a>  ggplot2<span class="sc">::</span><span class="fu">ggplot</span>(ggplot2<span class="sc">::</span><span class="fu">aes</span>(<span class="at">x =</span> Time, <span class="at">y =</span> Value, <span class="at">color =</span> Var)) <span class="sc">+</span></span>
-<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a>  ggplot2<span class="sc">::</span><span class="fu">geom_point</span>() <span class="sc">+</span></span>
-<span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a>  ggplot2<span class="sc">::</span><span class="fu">geom_line</span>() <span class="sc">+</span></span>
-<span id="cb5-7"><a href="#cb5-7" aria-hidden="true" tabindex="-1"></a>  ggplot2<span class="sc">::</span><span class="fu">theme_bw</span>() <span class="sc">+</span></span>
-<span id="cb5-8"><a href="#cb5-8" aria-hidden="true" tabindex="-1"></a>  ggplot2<span class="sc">::</span><span class="fu">facet_grid</span>(<span class="at">rows =</span> ggplot2<span class="sc">::</span><span class="fu">vars</span>(EPU)) <span class="sc">+</span></span>
-<span id="cb5-9"><a href="#cb5-9" aria-hidden="true" tabindex="-1"></a>  ggplot2<span class="sc">::</span><span class="fu">theme</span>(<span class="at">legend.position =</span> <span class="st">"top"</span>) <span class="sc">+</span></span>
-<span id="cb5-10"><a href="#cb5-10" aria-hidden="true" tabindex="-1"></a>  ggplot2<span class="sc">::</span><span class="fu">ylab</span>(<span class="st">"MT carbon"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb7"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a>total_data <span class="sc">|&gt;</span></span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a>    dplyr<span class="sc">::</span><span class="fu">filter</span>(EPU <span class="sc">%in%</span> <span class="fu">c</span>(<span class="st">"GB"</span>, <span class="st">"GOM"</span>, <span class="st">"MAB"</span>)) <span class="sc">|&gt;</span></span>
+<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a>  tidyr<span class="sc">::</span><span class="fu">pivot_longer</span>(<span class="at">cols =</span> <span class="fu">c</span>(ppr, annual_chl_pp), <span class="at">names_to =</span> <span class="st">"Var"</span>, <span class="at">values_to =</span> <span class="st">"Value"</span>) <span class="sc">|&gt;</span></span>
+<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a>  ggplot2<span class="sc">::</span><span class="fu">ggplot</span>(ggplot2<span class="sc">::</span><span class="fu">aes</span>(<span class="at">x =</span> Time, <span class="at">y =</span> Value, <span class="at">color =</span> Var)) <span class="sc">+</span></span>
+<span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a>  ggplot2<span class="sc">::</span><span class="fu">geom_point</span>() <span class="sc">+</span></span>
+<span id="cb7-6"><a href="#cb7-6" aria-hidden="true" tabindex="-1"></a>  ggplot2<span class="sc">::</span><span class="fu">geom_line</span>() <span class="sc">+</span></span>
+<span id="cb7-7"><a href="#cb7-7" aria-hidden="true" tabindex="-1"></a>  ggplot2<span class="sc">::</span><span class="fu">theme_bw</span>() <span class="sc">+</span></span>
+<span id="cb7-8"><a href="#cb7-8" aria-hidden="true" tabindex="-1"></a>  ggplot2<span class="sc">::</span><span class="fu">facet_grid</span>(<span class="at">rows =</span> ggplot2<span class="sc">::</span><span class="fu">vars</span>(EPU)) <span class="sc">+</span></span>
+<span id="cb7-9"><a href="#cb7-9" aria-hidden="true" tabindex="-1"></a>  ggplot2<span class="sc">::</span><span class="fu">theme</span>(<span class="at">legend.position =</span> <span class="st">"top"</span>) <span class="sc">+</span></span>
+<span id="cb7-10"><a href="#cb7-10" aria-hidden="true" tabindex="-1"></a>  ggplot2<span class="sc">::</span><span class="fu">ylab</span>(<span class="st">"MT carbon"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 <div class="cell-output-display">
 <div>
 <figure class="figure">
-<p><img src="overview_eof_files/figure-html/unnamed-chunk-4-1.png" class="img-fluid figure-img" width="672"></p>
+<p><img src="overview_eof_files/figure-html/unnamed-chunk-6-1.png" class="img-fluid figure-img" width="672"></p>
 </figure>
 </div>
 </div>
@@ -221,18 +822,18 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <div class="cell">
 <details class="code-fold">
 <summary>Code</summary>
-<div class="sourceCode cell-code" id="cb6"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>total_data <span class="sc">|&gt;</span></span>
-<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>    dplyr<span class="sc">::</span><span class="fu">filter</span>(EPU <span class="sc">%in%</span> <span class="fu">c</span>(<span class="st">"GB"</span>, <span class="st">"GOM"</span>, <span class="st">"MAB"</span>)) <span class="sc">|&gt;</span></span>
-<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a>  ggplot2<span class="sc">::</span><span class="fu">ggplot</span>(ggplot2<span class="sc">::</span><span class="fu">aes</span>(<span class="at">x =</span> Time, <span class="at">y =</span> ratio, <span class="at">color =</span> EPU)) <span class="sc">+</span></span>
-<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a>  ggplot2<span class="sc">::</span><span class="fu">geom_point</span>() <span class="sc">+</span></span>
-<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a>  ggplot2<span class="sc">::</span><span class="fu">geom_line</span>() <span class="sc">+</span></span>
-<span id="cb6-6"><a href="#cb6-6" aria-hidden="true" tabindex="-1"></a>  ggplot2<span class="sc">::</span><span class="fu">theme_bw</span>() <span class="sc">+</span></span>
-<span id="cb6-7"><a href="#cb6-7" aria-hidden="true" tabindex="-1"></a>  ggplot2<span class="sc">::</span><span class="fu">theme</span>(<span class="at">legend.position =</span> <span class="st">"top"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb8"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a>total_data <span class="sc">|&gt;</span></span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a>    dplyr<span class="sc">::</span><span class="fu">filter</span>(EPU <span class="sc">%in%</span> <span class="fu">c</span>(<span class="st">"GB"</span>, <span class="st">"GOM"</span>, <span class="st">"MAB"</span>)) <span class="sc">|&gt;</span></span>
+<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a>  ggplot2<span class="sc">::</span><span class="fu">ggplot</span>(ggplot2<span class="sc">::</span><span class="fu">aes</span>(<span class="at">x =</span> Time, <span class="at">y =</span> ratio, <span class="at">color =</span> EPU)) <span class="sc">+</span></span>
+<span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a>  ggplot2<span class="sc">::</span><span class="fu">geom_point</span>() <span class="sc">+</span></span>
+<span id="cb8-5"><a href="#cb8-5" aria-hidden="true" tabindex="-1"></a>  ggplot2<span class="sc">::</span><span class="fu">geom_line</span>() <span class="sc">+</span></span>
+<span id="cb8-6"><a href="#cb8-6" aria-hidden="true" tabindex="-1"></a>  ggplot2<span class="sc">::</span><span class="fu">theme_bw</span>() <span class="sc">+</span></span>
+<span id="cb8-7"><a href="#cb8-7" aria-hidden="true" tabindex="-1"></a>  ggplot2<span class="sc">::</span><span class="fu">theme</span>(<span class="at">legend.position =</span> <span class="st">"top"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 <div class="cell-output-display">
 <div>
 <figure class="figure">
-<p><img src="overview_eof_files/figure-html/unnamed-chunk-5-1.png" class="img-fluid figure-img" width="672"></p>
+<p><img src="overview_eof_files/figure-html/unnamed-chunk-7-1.png" class="img-fluid figure-img" width="672"></p>
 </figure>
 </div>
 </div>
@@ -243,7 +844,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <div class="cell">
 <details class="code-fold">
 <summary>Code</summary>
-<div class="sourceCode cell-code" id="cb7"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a>knitr<span class="sc">::</span><span class="fu">include_graphics</span>(here<span class="sc">::</span><span class="fu">here</span>(<span class="st">"data-raw/EOF energy accounting.png"</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb9"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a>knitr<span class="sc">::</span><span class="fu">include_graphics</span>(here<span class="sc">::</span><span class="fu">here</span>(<span class="st">"data-raw/EOF energy accounting.png"</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 <div class="cell-output-display">
 <div>
@@ -258,19 +859,19 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <div class="cell">
 <details class="code-fold">
 <summary>Code</summary>
-<div class="sourceCode cell-code" id="cb8"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a>fmsys <span class="ot">&lt;-</span> stocksmart<span class="sc">::</span>stockAssessmentSummary <span class="sc">|&gt;</span></span>
-<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">filter</span>(stringr<span class="sc">::</span><span class="fu">str_detect</span>(<span class="st">`</span><span class="at">Regional Ecosystem</span><span class="st">`</span>, <span class="st">"Northeast"</span>)) <span class="sc">|&gt;</span></span>
-<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">group_by</span>(<span class="st">`</span><span class="at">Stock Name</span><span class="st">`</span>) <span class="sc">|&gt;</span></span>
-<span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">filter</span>(<span class="st">`</span><span class="at">Assessment Year</span><span class="st">`</span> <span class="sc">==</span> <span class="fu">max</span>(<span class="st">`</span><span class="at">Assessment Year</span><span class="st">`</span>)) </span>
-<span id="cb8-5"><a href="#cb8-5" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb8-6"><a href="#cb8-6" aria-hidden="true" tabindex="-1"></a>fmsys <span class="sc">|&gt;</span></span>
-<span id="cb8-7"><a href="#cb8-7" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">pull</span>(Fmsy) <span class="sc">|&gt;</span></span>
-<span id="cb8-8"><a href="#cb8-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">hist</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb10"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a>fmsys <span class="ot">&lt;-</span> stocksmart<span class="sc">::</span>stockAssessmentSummary <span class="sc">|&gt;</span></span>
+<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">filter</span>(stringr<span class="sc">::</span><span class="fu">str_detect</span>(<span class="st">`</span><span class="at">Regional Ecosystem</span><span class="st">`</span>, <span class="st">"Northeast"</span>)) <span class="sc">|&gt;</span></span>
+<span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">group_by</span>(<span class="st">`</span><span class="at">Stock Name</span><span class="st">`</span>) <span class="sc">|&gt;</span></span>
+<span id="cb10-4"><a href="#cb10-4" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">filter</span>(<span class="st">`</span><span class="at">Assessment Year</span><span class="st">`</span> <span class="sc">==</span> <span class="fu">max</span>(<span class="st">`</span><span class="at">Assessment Year</span><span class="st">`</span>)) </span>
+<span id="cb10-5"><a href="#cb10-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb10-6"><a href="#cb10-6" aria-hidden="true" tabindex="-1"></a>fmsys <span class="sc">|&gt;</span></span>
+<span id="cb10-7"><a href="#cb10-7" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">pull</span>(Fmsy) <span class="sc">|&gt;</span></span>
+<span id="cb10-8"><a href="#cb10-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">hist</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 <div class="cell-output-display">
 <div>
 <figure class="figure">
-<p><img src="overview_eof_files/figure-html/unnamed-chunk-7-1.png" class="img-fluid figure-img" width="672"></p>
+<p><img src="overview_eof_files/figure-html/unnamed-chunk-9-1.png" class="img-fluid figure-img" width="672"></p>
 </figure>
 </div>
 </div>
@@ -279,15 +880,15 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <div class="cell">
 <details class="code-fold">
 <summary>Code</summary>
-<div class="sourceCode cell-code" id="cb9"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a>fmsys <span class="sc">|&gt;</span></span>
-<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">filter</span>(Fmsy <span class="sc">&lt;</span> <span class="dv">5</span>) <span class="sc">|&gt;</span></span>
-<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">pull</span>(Fmsy) <span class="sc">|&gt;</span></span>
-<span id="cb9-4"><a href="#cb9-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">hist</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb11"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a>fmsys <span class="sc">|&gt;</span></span>
+<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">filter</span>(Fmsy <span class="sc">&lt;</span> <span class="dv">5</span>) <span class="sc">|&gt;</span></span>
+<span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">pull</span>(Fmsy) <span class="sc">|&gt;</span></span>
+<span id="cb11-4"><a href="#cb11-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">hist</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 <div class="cell-output-display">
 <div>
 <figure class="figure">
-<p><img src="overview_eof_files/figure-html/unnamed-chunk-8-1.png" class="img-fluid figure-img" width="672"></p>
+<p><img src="overview_eof_files/figure-html/unnamed-chunk-10-1.png" class="img-fluid figure-img" width="672"></p>
 </figure>
 </div>
 </div>
@@ -296,10 +897,10 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <div class="cell">
 <details class="code-fold">
 <summary>Code</summary>
-<div class="sourceCode cell-code" id="cb10"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a>fmsys <span class="sc">|&gt;</span></span>
-<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">filter</span>(Fmsy <span class="sc">&lt;</span> <span class="dv">5</span>) <span class="sc">|&gt;</span></span>
-<span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">pull</span>(Fmsy) <span class="sc">|&gt;</span></span>
-<span id="cb10-4"><a href="#cb10-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mean</span>(<span class="at">na.rm =</span> <span class="cn">TRUE</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb12"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a>fmsys <span class="sc">|&gt;</span></span>
+<span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">filter</span>(Fmsy <span class="sc">&lt;</span> <span class="dv">5</span>) <span class="sc">|&gt;</span></span>
+<span id="cb12-3"><a href="#cb12-3" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">pull</span>(Fmsy) <span class="sc">|&gt;</span></span>
+<span id="cb12-4"><a href="#cb12-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mean</span>(<span class="at">na.rm =</span> <span class="cn">TRUE</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 <div class="cell-output cell-output-stdout">
 <pre><code>[1] 0.4514444</code></pre>
@@ -312,20 +913,20 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <div class="cell">
 <details class="code-fold">
 <summary>Code</summary>
-<div class="sourceCode cell-code" id="cb12"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a>total_data <span class="sc">|&gt;</span></span>
-<span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a>    dplyr<span class="sc">::</span><span class="fu">filter</span>(EPU <span class="sc">%in%</span> <span class="fu">c</span>(<span class="st">"GB"</span>, <span class="st">"GOM"</span>, <span class="st">"MAB"</span>)) <span class="sc">|&gt;</span></span>
-<span id="cb12-3"><a href="#cb12-3" aria-hidden="true" tabindex="-1"></a>  ggplot2<span class="sc">::</span><span class="fu">ggplot</span>(ggplot2<span class="sc">::</span><span class="fu">aes</span>(<span class="at">x =</span> Time, <span class="at">y =</span> ratio, <span class="at">color =</span> EPU)) <span class="sc">+</span></span>
-<span id="cb12-4"><a href="#cb12-4" aria-hidden="true" tabindex="-1"></a>  ggplot2<span class="sc">::</span><span class="fu">geom_point</span>() <span class="sc">+</span></span>
-<span id="cb12-5"><a href="#cb12-5" aria-hidden="true" tabindex="-1"></a>  ggplot2<span class="sc">::</span><span class="fu">geom_line</span>() <span class="sc">+</span></span>
-<span id="cb12-6"><a href="#cb12-6" aria-hidden="true" tabindex="-1"></a>  ggplot2<span class="sc">::</span><span class="fu">geom_hline</span>(<span class="at">yintercept =</span> <span class="fl">0.25</span>, <span class="at">linetype =</span> <span class="st">"dashed"</span>, <span class="at">color =</span> <span class="st">"orange"</span>) <span class="sc">+</span></span>
-<span id="cb12-7"><a href="#cb12-7" aria-hidden="true" tabindex="-1"></a>  ggplot2<span class="sc">::</span><span class="fu">geom_hline</span>(<span class="at">yintercept =</span> <span class="fl">0.5</span>, <span class="at">linetype =</span> <span class="st">"dashed"</span>, <span class="at">color =</span> <span class="st">"red"</span>) <span class="sc">+</span></span>
-<span id="cb12-8"><a href="#cb12-8" aria-hidden="true" tabindex="-1"></a>  ggplot2<span class="sc">::</span><span class="fu">theme_bw</span>() <span class="sc">+</span></span>
-<span id="cb12-9"><a href="#cb12-9" aria-hidden="true" tabindex="-1"></a>  ggplot2<span class="sc">::</span><span class="fu">theme</span>(<span class="at">legend.position =</span> <span class="st">"top"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb14"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a>total_data <span class="sc">|&gt;</span></span>
+<span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a>    dplyr<span class="sc">::</span><span class="fu">filter</span>(EPU <span class="sc">%in%</span> <span class="fu">c</span>(<span class="st">"GB"</span>, <span class="st">"GOM"</span>, <span class="st">"MAB"</span>)) <span class="sc">|&gt;</span></span>
+<span id="cb14-3"><a href="#cb14-3" aria-hidden="true" tabindex="-1"></a>  ggplot2<span class="sc">::</span><span class="fu">ggplot</span>(ggplot2<span class="sc">::</span><span class="fu">aes</span>(<span class="at">x =</span> Time, <span class="at">y =</span> ratio, <span class="at">color =</span> EPU)) <span class="sc">+</span></span>
+<span id="cb14-4"><a href="#cb14-4" aria-hidden="true" tabindex="-1"></a>  ggplot2<span class="sc">::</span><span class="fu">geom_point</span>() <span class="sc">+</span></span>
+<span id="cb14-5"><a href="#cb14-5" aria-hidden="true" tabindex="-1"></a>  ggplot2<span class="sc">::</span><span class="fu">geom_line</span>() <span class="sc">+</span></span>
+<span id="cb14-6"><a href="#cb14-6" aria-hidden="true" tabindex="-1"></a>  ggplot2<span class="sc">::</span><span class="fu">geom_hline</span>(<span class="at">yintercept =</span> <span class="fl">0.25</span>, <span class="at">linetype =</span> <span class="st">"dashed"</span>, <span class="at">color =</span> <span class="st">"orange"</span>) <span class="sc">+</span></span>
+<span id="cb14-7"><a href="#cb14-7" aria-hidden="true" tabindex="-1"></a>  ggplot2<span class="sc">::</span><span class="fu">geom_hline</span>(<span class="at">yintercept =</span> <span class="fl">0.5</span>, <span class="at">linetype =</span> <span class="st">"dashed"</span>, <span class="at">color =</span> <span class="st">"red"</span>) <span class="sc">+</span></span>
+<span id="cb14-8"><a href="#cb14-8" aria-hidden="true" tabindex="-1"></a>  ggplot2<span class="sc">::</span><span class="fu">theme_bw</span>() <span class="sc">+</span></span>
+<span id="cb14-9"><a href="#cb14-9" aria-hidden="true" tabindex="-1"></a>  ggplot2<span class="sc">::</span><span class="fu">theme</span>(<span class="at">legend.position =</span> <span class="st">"top"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 <div class="cell-output-display">
 <div>
 <figure class="figure">
-<p><img src="overview_eof_files/figure-html/unnamed-chunk-10-1.png" class="img-fluid figure-img" width="672"></p>
+<p><img src="overview_eof_files/figure-html/unnamed-chunk-12-1.png" class="img-fluid figure-img" width="672"></p>
 </figure>
 </div>
 </div>
@@ -340,28 +941,28 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <div class="cell">
 <details class="code-fold">
 <summary>Code</summary>
-<div class="sourceCode cell-code" id="cb13"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a>cumulative_energy <span class="ot">&lt;-</span> total_data <span class="sc">|&gt;</span></span>
-<span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a>    dplyr<span class="sc">::</span><span class="fu">filter</span>(EPU <span class="sc">%in%</span> <span class="fu">c</span>(<span class="st">"GB"</span>, <span class="st">"GOM"</span>, <span class="st">"MAB"</span>)) <span class="sc">|&gt;</span></span>
-<span id="cb13-3"><a href="#cb13-3" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">arrange</span>(EPU, Time) <span class="sc">|&gt;</span></span>
-<span id="cb13-4"><a href="#cb13-4" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">mutate</span>(<span class="at">overdrawn =</span> ratio <span class="sc">-</span> <span class="fl">0.25</span>) <span class="sc">|&gt;</span></span>
-<span id="cb13-5"><a href="#cb13-5" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">group_by</span>(EPU) <span class="sc">|&gt;</span></span>
-<span id="cb13-6"><a href="#cb13-6" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">mutate</span>(<span class="at">cumulative_overdrawn =</span> <span class="fu">cumsum</span>(overdrawn)) </span>
-<span id="cb13-7"><a href="#cb13-7" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb13-8"><a href="#cb13-8" aria-hidden="true" tabindex="-1"></a>cumulative_energy <span class="sc">|&gt;</span></span>
-<span id="cb13-9"><a href="#cb13-9" aria-hidden="true" tabindex="-1"></a>  ggplot2<span class="sc">::</span><span class="fu">ggplot</span>(ggplot2<span class="sc">::</span><span class="fu">aes</span>(<span class="at">x =</span> Time, </span>
-<span id="cb13-10"><a href="#cb13-10" aria-hidden="true" tabindex="-1"></a>                               <span class="at">y =</span> cumulative_overdrawn, </span>
-<span id="cb13-11"><a href="#cb13-11" aria-hidden="true" tabindex="-1"></a>                               <span class="at">color =</span> EPU)) <span class="sc">+</span></span>
-<span id="cb13-12"><a href="#cb13-12" aria-hidden="true" tabindex="-1"></a>  ggplot2<span class="sc">::</span><span class="fu">geom_point</span>() <span class="sc">+</span></span>
-<span id="cb13-13"><a href="#cb13-13" aria-hidden="true" tabindex="-1"></a>  ggplot2<span class="sc">::</span><span class="fu">geom_line</span>() <span class="sc">+</span></span>
-<span id="cb13-14"><a href="#cb13-14" aria-hidden="true" tabindex="-1"></a>  ggplot2<span class="sc">::</span><span class="fu">geom_hline</span>(<span class="at">yintercept =</span> <span class="dv">0</span>, <span class="at">linetype =</span> <span class="st">"dashed"</span>, <span class="at">color =</span> <span class="st">"black"</span>) <span class="sc">+</span></span>
-<span id="cb13-15"><a href="#cb13-15" aria-hidden="true" tabindex="-1"></a>  ggplot2<span class="sc">::</span><span class="fu">theme_bw</span>() <span class="sc">+</span></span>
-<span id="cb13-16"><a href="#cb13-16" aria-hidden="true" tabindex="-1"></a>  ggplot2<span class="sc">::</span><span class="fu">theme</span>(<span class="at">legend.position =</span> <span class="st">"top"</span>) <span class="sc">+</span></span>
-<span id="cb13-17"><a href="#cb13-17" aria-hidden="true" tabindex="-1"></a>  ggplot2<span class="sc">::</span><span class="fu">ylab</span>(<span class="st">"Cumulative overdrawn energy (relative to 1964)"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb15"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a>cumulative_energy <span class="ot">&lt;-</span> total_data <span class="sc">|&gt;</span></span>
+<span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a>    dplyr<span class="sc">::</span><span class="fu">filter</span>(EPU <span class="sc">%in%</span> <span class="fu">c</span>(<span class="st">"GB"</span>, <span class="st">"GOM"</span>, <span class="st">"MAB"</span>)) <span class="sc">|&gt;</span></span>
+<span id="cb15-3"><a href="#cb15-3" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">arrange</span>(EPU, Time) <span class="sc">|&gt;</span></span>
+<span id="cb15-4"><a href="#cb15-4" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">mutate</span>(<span class="at">overdrawn =</span> ratio <span class="sc">-</span> <span class="fl">0.25</span>) <span class="sc">|&gt;</span></span>
+<span id="cb15-5"><a href="#cb15-5" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">group_by</span>(EPU) <span class="sc">|&gt;</span></span>
+<span id="cb15-6"><a href="#cb15-6" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">mutate</span>(<span class="at">cumulative_overdrawn =</span> <span class="fu">cumsum</span>(overdrawn)) </span>
+<span id="cb15-7"><a href="#cb15-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb15-8"><a href="#cb15-8" aria-hidden="true" tabindex="-1"></a>cumulative_energy <span class="sc">|&gt;</span></span>
+<span id="cb15-9"><a href="#cb15-9" aria-hidden="true" tabindex="-1"></a>  ggplot2<span class="sc">::</span><span class="fu">ggplot</span>(ggplot2<span class="sc">::</span><span class="fu">aes</span>(<span class="at">x =</span> Time, </span>
+<span id="cb15-10"><a href="#cb15-10" aria-hidden="true" tabindex="-1"></a>                               <span class="at">y =</span> cumulative_overdrawn, </span>
+<span id="cb15-11"><a href="#cb15-11" aria-hidden="true" tabindex="-1"></a>                               <span class="at">color =</span> EPU)) <span class="sc">+</span></span>
+<span id="cb15-12"><a href="#cb15-12" aria-hidden="true" tabindex="-1"></a>  ggplot2<span class="sc">::</span><span class="fu">geom_point</span>() <span class="sc">+</span></span>
+<span id="cb15-13"><a href="#cb15-13" aria-hidden="true" tabindex="-1"></a>  ggplot2<span class="sc">::</span><span class="fu">geom_line</span>() <span class="sc">+</span></span>
+<span id="cb15-14"><a href="#cb15-14" aria-hidden="true" tabindex="-1"></a>  ggplot2<span class="sc">::</span><span class="fu">geom_hline</span>(<span class="at">yintercept =</span> <span class="dv">0</span>, <span class="at">linetype =</span> <span class="st">"dashed"</span>, <span class="at">color =</span> <span class="st">"black"</span>) <span class="sc">+</span></span>
+<span id="cb15-15"><a href="#cb15-15" aria-hidden="true" tabindex="-1"></a>  ggplot2<span class="sc">::</span><span class="fu">theme_bw</span>() <span class="sc">+</span></span>
+<span id="cb15-16"><a href="#cb15-16" aria-hidden="true" tabindex="-1"></a>  ggplot2<span class="sc">::</span><span class="fu">theme</span>(<span class="at">legend.position =</span> <span class="st">"top"</span>) <span class="sc">+</span></span>
+<span id="cb15-17"><a href="#cb15-17" aria-hidden="true" tabindex="-1"></a>  ggplot2<span class="sc">::</span><span class="fu">ylab</span>(<span class="st">"Cumulative overdrawn energy (relative to 1964)"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 <div class="cell-output-display">
 <div>
 <figure class="figure">
-<p><img src="overview_eof_files/figure-html/unnamed-chunk-11-1.png" class="img-fluid figure-img" width="672"></p>
+<p><img src="overview_eof_files/figure-html/unnamed-chunk-13-1.png" class="img-fluid figure-img" width="672"></p>
 </figure>
 </div>
 </div>
@@ -370,11 +971,11 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <div class="cell">
 <details class="code-fold">
 <summary>Code</summary>
-<div class="sourceCode cell-code" id="cb14"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a>test <span class="ot">&lt;-</span> cumulative_energy <span class="sc">|&gt;</span></span>
-<span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">filter</span>(EPU <span class="sc">==</span> <span class="st">"GB"</span>,</span>
-<span id="cb14-3"><a href="#cb14-3" aria-hidden="true" tabindex="-1"></a>                Time <span class="sc">&gt;</span> <span class="dv">1976</span>)</span>
-<span id="cb14-4"><a href="#cb14-4" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb14-5"><a href="#cb14-5" aria-hidden="true" tabindex="-1"></a>model <span class="ot">&lt;-</span> <span class="fu">lm</span>(cumulative_overdrawn <span class="sc">~</span> Time, <span class="at">data =</span> test)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb16"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a>test <span class="ot">&lt;-</span> cumulative_energy <span class="sc">|&gt;</span></span>
+<span id="cb16-2"><a href="#cb16-2" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">filter</span>(EPU <span class="sc">==</span> <span class="st">"GB"</span>,</span>
+<span id="cb16-3"><a href="#cb16-3" aria-hidden="true" tabindex="-1"></a>                Time <span class="sc">&gt;</span> <span class="dv">1976</span>)</span>
+<span id="cb16-4"><a href="#cb16-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb16-5"><a href="#cb16-5" aria-hidden="true" tabindex="-1"></a>model <span class="ot">&lt;-</span> <span class="fu">lm</span>(cumulative_overdrawn <span class="sc">~</span> Time, <span class="at">data =</span> test)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 </div>
 <p>First, Georges Bank had a cumulative extraction of more than 9x the annual primary production in the 1970s. Even though landings have been reduced since the 1970s, there is still a current deficit of approximately 7x the annual primary production. Looking at the slope from 1977 to present, the cumulative energy deficit is being repaid at 0.06 per year, which means it will take until the year 4118 to return to the biomass that the system had in 1964.</p>
@@ -388,78 +989,80 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <div class="cell">
 <details class="code-fold">
 <summary>Code</summary>
-<div class="sourceCode cell-code" id="cb15"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a>return_ppr <span class="ot">&lt;-</span> <span class="cf">function</span>(landings, pp, te, tl) {</span>
-<span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb15-3"><a href="#cb15-3" aria-hidden="true" tabindex="-1"></a>      ppr <span class="ot">=</span> (landings <span class="sc">/</span> <span class="dv">9</span>) <span class="sc">*</span> (<span class="dv">1</span> <span class="sc">/</span> te)<span class="sc">^</span>(tl <span class="sc">-</span><span class="dv">1</span>)</span>
-<span id="cb15-4"><a href="#cb15-4" aria-hidden="true" tabindex="-1"></a>      ratio <span class="ot">=</span> ppr <span class="sc">/</span> pp</span>
-<span id="cb15-5"><a href="#cb15-5" aria-hidden="true" tabindex="-1"></a>      </span>
-<span id="cb15-6"><a href="#cb15-6" aria-hidden="true" tabindex="-1"></a>      <span class="fu">return</span>(ratio)</span>
-<span id="cb15-7"><a href="#cb15-7" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb15-8"><a href="#cb15-8" aria-hidden="true" tabindex="-1"></a>}</span>
-<span id="cb15-9"><a href="#cb15-9" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb15-10"><a href="#cb15-10" aria-hidden="true" tabindex="-1"></a>total_data2 <span class="ot">&lt;-</span> total_data <span class="sc">|&gt;</span></span>
-<span id="cb15-11"><a href="#cb15-11" aria-hidden="true" tabindex="-1"></a>    dplyr<span class="sc">::</span><span class="fu">filter</span>(EPU <span class="sc">%in%</span> <span class="fu">c</span>(<span class="st">"GB"</span>, <span class="st">"GOM"</span>, <span class="st">"MAB"</span>)) <span class="sc">|&gt;</span></span>
-<span id="cb15-12"><a href="#cb15-12" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">mutate</span>(</span>
-<span id="cb15-13"><a href="#cb15-13" aria-hidden="true" tabindex="-1"></a>    <span class="at">ratio_te5_tl3.5 =</span> <span class="fu">return_ppr</span>(landings, annual_chl_pp, <span class="at">te =</span> <span class="fl">0.05</span>, <span class="at">tl =</span> <span class="fl">3.5</span>),</span>
-<span id="cb15-14"><a href="#cb15-14" aria-hidden="true" tabindex="-1"></a>    <span class="at">ratio_te5_tl4 =</span> <span class="fu">return_ppr</span>(landings, annual_chl_pp, <span class="at">te =</span> <span class="fl">0.05</span>, <span class="at">tl =</span> <span class="dv">4</span>),</span>
-<span id="cb15-15"><a href="#cb15-15" aria-hidden="true" tabindex="-1"></a>    <span class="at">ratio_te5_tl3 =</span> <span class="fu">return_ppr</span>(landings, annual_chl_pp, <span class="at">te =</span> <span class="fl">0.05</span>, <span class="at">tl =</span> <span class="dv">3</span>),</span>
-<span id="cb15-16"><a href="#cb15-16" aria-hidden="true" tabindex="-1"></a>    <span class="at">ratio_te10_tl3.5 =</span> <span class="fu">return_ppr</span>(landings, annual_chl_pp, <span class="at">te =</span> <span class="fl">0.1</span>, <span class="at">tl =</span> <span class="fl">3.5</span>),</span>
-<span id="cb15-17"><a href="#cb15-17" aria-hidden="true" tabindex="-1"></a>    <span class="at">ratio_te10_tl4 =</span> <span class="fu">return_ppr</span>(landings, annual_chl_pp, <span class="at">te =</span> <span class="fl">0.1</span>, <span class="at">tl =</span> <span class="dv">4</span>),</span>
-<span id="cb15-18"><a href="#cb15-18" aria-hidden="true" tabindex="-1"></a>    <span class="at">ratio_te10_tl3 =</span> <span class="fu">return_ppr</span>(landings, annual_chl_pp, <span class="at">te =</span> <span class="fl">0.1</span>, <span class="at">tl =</span> <span class="dv">3</span>),</span>
-<span id="cb15-19"><a href="#cb15-19" aria-hidden="true" tabindex="-1"></a>    <span class="at">ratio_te15_tl3.5 =</span> <span class="fu">return_ppr</span>(landings, annual_chl_pp, <span class="at">te =</span> <span class="fl">0.15</span>, <span class="at">tl =</span> <span class="fl">3.5</span>),</span>
-<span id="cb15-20"><a href="#cb15-20" aria-hidden="true" tabindex="-1"></a>    <span class="at">ratio_te15_tl4 =</span> <span class="fu">return_ppr</span>(landings, annual_chl_pp, <span class="at">te =</span> <span class="fl">0.15</span>, <span class="at">tl =</span> <span class="dv">4</span>),</span>
-<span id="cb15-21"><a href="#cb15-21" aria-hidden="true" tabindex="-1"></a>    <span class="at">ratio_te15_tl3 =</span> <span class="fu">return_ppr</span>(landings, annual_chl_pp, <span class="at">te =</span> <span class="fl">0.15</span>, <span class="at">tl =</span> <span class="dv">3</span>),</span>
-<span id="cb15-22"><a href="#cb15-22" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">|&gt;</span></span>
-<span id="cb15-23"><a href="#cb15-23" aria-hidden="true" tabindex="-1"></a>  tidyr<span class="sc">::</span><span class="fu">pivot_longer</span>(<span class="at">cols =</span> <span class="fu">starts_with</span>(<span class="st">"ratio"</span>), <span class="at">names_to =</span> <span class="st">"method"</span>, <span class="at">values_to =</span> <span class="st">"ratio"</span>) <span class="sc">|&gt;</span></span>
-<span id="cb15-24"><a href="#cb15-24" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">filter</span>(method <span class="sc">!=</span> <span class="st">"ratio"</span>) <span class="sc">|&gt;</span></span>
-<span id="cb15-25"><a href="#cb15-25" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">mutate</span>(<span class="at">transfer_efficiency =</span> dplyr<span class="sc">::</span><span class="fu">case_when</span>(</span>
-<span id="cb15-26"><a href="#cb15-26" aria-hidden="true" tabindex="-1"></a>    <span class="fu">grepl</span>(<span class="st">"te5"</span>, method) <span class="sc">~</span> <span class="st">"5%"</span>,</span>
-<span id="cb15-27"><a href="#cb15-27" aria-hidden="true" tabindex="-1"></a>    <span class="fu">grepl</span>(<span class="st">"te10"</span>, method) <span class="sc">~</span> <span class="st">"10%"</span>,</span>
-<span id="cb15-28"><a href="#cb15-28" aria-hidden="true" tabindex="-1"></a>    <span class="fu">grepl</span>(<span class="st">"te15"</span>, method) <span class="sc">~</span> <span class="st">"15%"</span></span>
-<span id="cb15-29"><a href="#cb15-29" aria-hidden="true" tabindex="-1"></a>  ),</span>
-<span id="cb15-30"><a href="#cb15-30" aria-hidden="true" tabindex="-1"></a>  <span class="at">trophic_level =</span> dplyr<span class="sc">::</span><span class="fu">case_when</span>(</span>
-<span id="cb15-31"><a href="#cb15-31" aria-hidden="true" tabindex="-1"></a>    <span class="fu">grepl</span>(<span class="st">"tl3.5"</span>, method) <span class="sc">~</span> <span class="st">"3.5"</span>,</span>
-<span id="cb15-32"><a href="#cb15-32" aria-hidden="true" tabindex="-1"></a>    <span class="fu">grepl</span>(<span class="st">"tl4"</span>, method) <span class="sc">~</span> <span class="st">"4"</span>,</span>
-<span id="cb15-33"><a href="#cb15-33" aria-hidden="true" tabindex="-1"></a>    <span class="fu">grepl</span>(<span class="st">"tl3"</span>, method) <span class="sc">~</span> <span class="st">"3"</span></span>
-<span id="cb15-34"><a href="#cb15-34" aria-hidden="true" tabindex="-1"></a>  )) </span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb17"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a>return_ppr <span class="ot">&lt;-</span> <span class="cf">function</span>(landings, pp, te, tl) {</span>
+<span id="cb17-2"><a href="#cb17-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb17-3"><a href="#cb17-3" aria-hidden="true" tabindex="-1"></a>      ppr <span class="ot">=</span> (landings <span class="sc">/</span> <span class="dv">9</span>) <span class="sc">*</span> (<span class="dv">1</span> <span class="sc">/</span> te)<span class="sc">^</span>(tl <span class="sc">-</span><span class="dv">1</span>)</span>
+<span id="cb17-4"><a href="#cb17-4" aria-hidden="true" tabindex="-1"></a>      ratio <span class="ot">=</span> ppr <span class="sc">/</span> pp</span>
+<span id="cb17-5"><a href="#cb17-5" aria-hidden="true" tabindex="-1"></a>      </span>
+<span id="cb17-6"><a href="#cb17-6" aria-hidden="true" tabindex="-1"></a>      <span class="fu">return</span>(ratio)</span>
+<span id="cb17-7"><a href="#cb17-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb17-8"><a href="#cb17-8" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb17-9"><a href="#cb17-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb17-10"><a href="#cb17-10" aria-hidden="true" tabindex="-1"></a>total_data2 <span class="ot">&lt;-</span> total_data <span class="sc">|&gt;</span></span>
+<span id="cb17-11"><a href="#cb17-11" aria-hidden="true" tabindex="-1"></a>    dplyr<span class="sc">::</span><span class="fu">filter</span>(EPU <span class="sc">%in%</span> <span class="fu">c</span>(<span class="st">"GB"</span>, <span class="st">"GOM"</span>, <span class="st">"MAB"</span>)) <span class="sc">|&gt;</span></span>
+<span id="cb17-12"><a href="#cb17-12" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">mutate</span>(</span>
+<span id="cb17-13"><a href="#cb17-13" aria-hidden="true" tabindex="-1"></a>    <span class="at">ratio_te5_tl_lower =</span> <span class="fu">return_ppr</span>(landings, annual_chl_pp, <span class="at">te =</span> <span class="fl">0.05</span>, <span class="at">tl =</span> lower_tl),</span>
+<span id="cb17-14"><a href="#cb17-14" aria-hidden="true" tabindex="-1"></a>    <span class="at">ratio_te5_tl_mean =</span> <span class="fu">return_ppr</span>(landings, annual_chl_pp, <span class="at">te =</span> <span class="fl">0.05</span>, <span class="at">tl =</span> mean_tl),</span>
+<span id="cb17-15"><a href="#cb17-15" aria-hidden="true" tabindex="-1"></a>    <span class="at">ratio_te5_tl_upper =</span> <span class="fu">return_ppr</span>(landings, annual_chl_pp, <span class="at">te =</span> <span class="fl">0.05</span>, <span class="at">tl =</span> upper_tl),</span>
+<span id="cb17-16"><a href="#cb17-16" aria-hidden="true" tabindex="-1"></a>    <span class="at">ratio_te10_tl_lower =</span> <span class="fu">return_ppr</span>(landings, annual_chl_pp, <span class="at">te =</span> <span class="fl">0.1</span>, <span class="at">tl =</span> lower_tl),</span>
+<span id="cb17-17"><a href="#cb17-17" aria-hidden="true" tabindex="-1"></a>    <span class="at">ratio_te10_tl_mean =</span> <span class="fu">return_ppr</span>(landings, annual_chl_pp, <span class="at">te =</span> <span class="fl">0.1</span>, <span class="at">tl =</span> mean_tl),</span>
+<span id="cb17-18"><a href="#cb17-18" aria-hidden="true" tabindex="-1"></a>    <span class="at">ratio_te10_tl_upper =</span> <span class="fu">return_ppr</span>(landings, annual_chl_pp, <span class="at">te =</span> <span class="fl">0.1</span>, <span class="at">tl =</span> upper_tl),</span>
+<span id="cb17-19"><a href="#cb17-19" aria-hidden="true" tabindex="-1"></a>    <span class="at">ratio_te15_tl_lower =</span> <span class="fu">return_ppr</span>(landings, annual_chl_pp, <span class="at">te =</span> <span class="fl">0.15</span>, <span class="at">tl =</span> lower_tl),</span>
+<span id="cb17-20"><a href="#cb17-20" aria-hidden="true" tabindex="-1"></a>    <span class="at">ratio_te15_tl_mean =</span> <span class="fu">return_ppr</span>(landings, annual_chl_pp, <span class="at">te =</span> <span class="fl">0.15</span>, <span class="at">tl =</span> mean_tl),</span>
+<span id="cb17-21"><a href="#cb17-21" aria-hidden="true" tabindex="-1"></a>    <span class="at">ratio_te15_tl_upper =</span> <span class="fu">return_ppr</span>(landings, annual_chl_pp, <span class="at">te =</span> <span class="fl">0.15</span>, <span class="at">tl =</span> upper_tl),</span>
+<span id="cb17-22"><a href="#cb17-22" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">|&gt;</span></span>
+<span id="cb17-23"><a href="#cb17-23" aria-hidden="true" tabindex="-1"></a>  tidyr<span class="sc">::</span><span class="fu">pivot_longer</span>(<span class="at">cols =</span> <span class="fu">starts_with</span>(<span class="st">"ratio"</span>), <span class="at">names_to =</span> <span class="st">"method"</span>, <span class="at">values_to =</span> <span class="st">"ratio"</span>) <span class="sc">|&gt;</span></span>
+<span id="cb17-24"><a href="#cb17-24" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">filter</span>(method <span class="sc">!=</span> <span class="st">"ratio"</span>) <span class="sc">|&gt;</span></span>
+<span id="cb17-25"><a href="#cb17-25" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">mutate</span>(<span class="at">transfer_efficiency =</span> dplyr<span class="sc">::</span><span class="fu">case_when</span>(</span>
+<span id="cb17-26"><a href="#cb17-26" aria-hidden="true" tabindex="-1"></a>    <span class="fu">grepl</span>(<span class="st">"te5"</span>, method) <span class="sc">~</span> <span class="st">"5%"</span>,</span>
+<span id="cb17-27"><a href="#cb17-27" aria-hidden="true" tabindex="-1"></a>    <span class="fu">grepl</span>(<span class="st">"te10"</span>, method) <span class="sc">~</span> <span class="st">"10%"</span>,</span>
+<span id="cb17-28"><a href="#cb17-28" aria-hidden="true" tabindex="-1"></a>    <span class="fu">grepl</span>(<span class="st">"te15"</span>, method) <span class="sc">~</span> <span class="st">"15%"</span></span>
+<span id="cb17-29"><a href="#cb17-29" aria-hidden="true" tabindex="-1"></a>  ),</span>
+<span id="cb17-30"><a href="#cb17-30" aria-hidden="true" tabindex="-1"></a>  <span class="at">trophic_level =</span> dplyr<span class="sc">::</span><span class="fu">case_when</span>(</span>
+<span id="cb17-31"><a href="#cb17-31" aria-hidden="true" tabindex="-1"></a>    <span class="fu">grepl</span>(<span class="st">"tl_lower"</span>, method) <span class="sc">~</span> lower_tl,</span>
+<span id="cb17-32"><a href="#cb17-32" aria-hidden="true" tabindex="-1"></a>    <span class="fu">grepl</span>(<span class="st">"tl_mean"</span>, method) <span class="sc">~</span> mean_tl,</span>
+<span id="cb17-33"><a href="#cb17-33" aria-hidden="true" tabindex="-1"></a>    <span class="fu">grepl</span>(<span class="st">"tl_upper"</span>, method) <span class="sc">~</span> upper_tl</span>
+<span id="cb17-34"><a href="#cb17-34" aria-hidden="true" tabindex="-1"></a>  )) </span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 </div>
 <div class="cell">
 <details class="code-fold">
 <summary>Code</summary>
-<div class="sourceCode cell-code" id="cb16"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> (i <span class="cf">in</span> <span class="fu">c</span>(<span class="st">"MAB"</span>, <span class="st">"GB"</span>, <span class="st">"GOM"</span>)) {</span>
-<span id="cb16-2"><a href="#cb16-2" aria-hidden="true" tabindex="-1"></a>  plt <span class="ot">&lt;-</span> total_data2 <span class="sc">|&gt;</span></span>
-<span id="cb16-3"><a href="#cb16-3" aria-hidden="true" tabindex="-1"></a>    dplyr<span class="sc">::</span><span class="fu">filter</span>(EPU <span class="sc">==</span> i) <span class="sc">|&gt;</span></span>
-<span id="cb16-4"><a href="#cb16-4" aria-hidden="true" tabindex="-1"></a>  ggplot2<span class="sc">::</span><span class="fu">ggplot</span>(ggplot2<span class="sc">::</span><span class="fu">aes</span>(<span class="at">x =</span> Time, <span class="at">y =</span> ratio, <span class="at">color =</span> trophic_level)) <span class="sc">+</span></span>
-<span id="cb16-5"><a href="#cb16-5" aria-hidden="true" tabindex="-1"></a>  ggplot2<span class="sc">::</span><span class="fu">geom_point</span>() <span class="sc">+</span></span>
-<span id="cb16-6"><a href="#cb16-6" aria-hidden="true" tabindex="-1"></a>  ggplot2<span class="sc">::</span><span class="fu">geom_line</span>() <span class="sc">+</span></span>
-<span id="cb16-7"><a href="#cb16-7" aria-hidden="true" tabindex="-1"></a>  ggplot2<span class="sc">::</span><span class="fu">theme_bw</span>() <span class="sc">+</span></span>
-<span id="cb16-8"><a href="#cb16-8" aria-hidden="true" tabindex="-1"></a>  ggplot2<span class="sc">::</span><span class="fu">facet_grid</span>(<span class="at">rows =</span> ggplot2<span class="sc">::</span><span class="fu">vars</span>(transfer_efficiency),</span>
-<span id="cb16-9"><a href="#cb16-9" aria-hidden="true" tabindex="-1"></a>                      <span class="at">scales =</span> <span class="st">"free"</span>) <span class="sc">+</span></span>
-<span id="cb16-10"><a href="#cb16-10" aria-hidden="true" tabindex="-1"></a>  ggplot2<span class="sc">::</span><span class="fu">theme</span>(<span class="at">legend.position =</span> <span class="st">"top"</span>) <span class="sc">+</span></span>
-<span id="cb16-11"><a href="#cb16-11" aria-hidden="true" tabindex="-1"></a>    ggplot2<span class="sc">::</span><span class="fu">ggtitle</span>(i)</span>
-<span id="cb16-12"><a href="#cb16-12" aria-hidden="true" tabindex="-1"></a>  </span>
-<span id="cb16-13"><a href="#cb16-13" aria-hidden="true" tabindex="-1"></a>  <span class="fu">print</span>(plt)</span>
-<span id="cb16-14"><a href="#cb16-14" aria-hidden="true" tabindex="-1"></a>}</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb18"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> (i <span class="cf">in</span> <span class="fu">c</span>(<span class="st">"MAB"</span>, <span class="st">"GB"</span>, <span class="st">"GOM"</span>)) {</span>
+<span id="cb18-2"><a href="#cb18-2" aria-hidden="true" tabindex="-1"></a>  plt <span class="ot">&lt;-</span> total_data2 <span class="sc">|&gt;</span></span>
+<span id="cb18-3"><a href="#cb18-3" aria-hidden="true" tabindex="-1"></a>    dplyr<span class="sc">::</span><span class="fu">filter</span>(EPU <span class="sc">==</span> i) <span class="sc">|&gt;</span></span>
+<span id="cb18-4"><a href="#cb18-4" aria-hidden="true" tabindex="-1"></a>  ggplot2<span class="sc">::</span><span class="fu">ggplot</span>(ggplot2<span class="sc">::</span><span class="fu">aes</span>(<span class="at">x =</span> Time, <span class="at">y =</span> ratio, <span class="at">color =</span> <span class="fu">log</span>(ratio))) <span class="sc">+</span></span>
+<span id="cb18-5"><a href="#cb18-5" aria-hidden="true" tabindex="-1"></a>  ggplot2<span class="sc">::</span><span class="fu">geom_point</span>() <span class="sc">+</span></span>
+<span id="cb18-6"><a href="#cb18-6" aria-hidden="true" tabindex="-1"></a>  ggplot2<span class="sc">::</span><span class="fu">geom_line</span>() <span class="sc">+</span></span>
+<span id="cb18-7"><a href="#cb18-7" aria-hidden="true" tabindex="-1"></a>  ggplot2<span class="sc">::</span><span class="fu">theme_bw</span>() <span class="sc">+</span></span>
+<span id="cb18-8"><a href="#cb18-8" aria-hidden="true" tabindex="-1"></a>  ggplot2<span class="sc">::</span><span class="fu">facet_wrap</span>(<span class="at">facets =</span> ggplot2<span class="sc">::</span><span class="fu">vars</span>(<span class="fu">paste</span>(<span class="st">"TE:"</span>, transfer_efficiency, </span>
+<span id="cb18-9"><a href="#cb18-9" aria-hidden="true" tabindex="-1"></a>                                                   <span class="st">"TL:"</span>, trophic_level)),</span>
+<span id="cb18-10"><a href="#cb18-10" aria-hidden="true" tabindex="-1"></a>                        <span class="at">scales =</span> <span class="st">"free"</span>) <span class="sc">+</span></span>
+<span id="cb18-11"><a href="#cb18-11" aria-hidden="true" tabindex="-1"></a>  ggplot2<span class="sc">::</span><span class="fu">theme</span>(<span class="at">legend.position =</span> <span class="st">"bottom"</span>) <span class="sc">+</span> </span>
+<span id="cb18-12"><a href="#cb18-12" aria-hidden="true" tabindex="-1"></a>  viridis<span class="sc">::</span><span class="fu">scale_color_viridis</span>(<span class="at">discrete =</span> <span class="cn">FALSE</span>) <span class="sc">+</span></span>
+<span id="cb18-13"><a href="#cb18-13" aria-hidden="true" tabindex="-1"></a>  ggplot2<span class="sc">::</span><span class="fu">ggtitle</span>(i)</span>
+<span id="cb18-14"><a href="#cb18-14" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb18-15"><a href="#cb18-15" aria-hidden="true" tabindex="-1"></a>  <span class="fu">print</span>(plt)</span>
+<span id="cb18-16"><a href="#cb18-16" aria-hidden="true" tabindex="-1"></a>}</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 <div class="cell-output-display">
 <div>
 <figure class="figure">
-<p><img src="overview_eof_files/figure-html/unnamed-chunk-14-1.png" class="img-fluid figure-img" width="672"></p>
+<p><img src="overview_eof_files/figure-html/unnamed-chunk-16-1.png" class="img-fluid figure-img" width="672"></p>
 </figure>
 </div>
 </div>
 <div class="cell-output-display">
 <div>
 <figure class="figure">
-<p><img src="overview_eof_files/figure-html/unnamed-chunk-14-2.png" class="img-fluid figure-img" width="672"></p>
+<p><img src="overview_eof_files/figure-html/unnamed-chunk-16-2.png" class="img-fluid figure-img" width="672"></p>
 </figure>
 </div>
 </div>
 <div class="cell-output-display">
 <div>
 <figure class="figure">
-<p><img src="overview_eof_files/figure-html/unnamed-chunk-14-3.png" class="img-fluid figure-img" width="672"></p>
+<p><img src="overview_eof_files/figure-html/unnamed-chunk-16-3.png" class="img-fluid figure-img" width="672"></p>
 </figure>
 </div>
 </div>
@@ -468,39 +1071,43 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <div class="cell">
 <details class="code-fold">
 <summary>Code</summary>
-<div class="sourceCode cell-code" id="cb17"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> (i <span class="cf">in</span> <span class="fu">c</span>(<span class="st">"MAB"</span>, <span class="st">"GB"</span>, <span class="st">"GOM"</span>)) {</span>
-<span id="cb17-2"><a href="#cb17-2" aria-hidden="true" tabindex="-1"></a>  plt <span class="ot">&lt;-</span> total_data2 <span class="sc">|&gt;</span></span>
-<span id="cb17-3"><a href="#cb17-3" aria-hidden="true" tabindex="-1"></a>    dplyr<span class="sc">::</span><span class="fu">filter</span>(EPU <span class="sc">==</span> i) <span class="sc">|&gt;</span></span>
-<span id="cb17-4"><a href="#cb17-4" aria-hidden="true" tabindex="-1"></a>  ggplot2<span class="sc">::</span><span class="fu">ggplot</span>(ggplot2<span class="sc">::</span><span class="fu">aes</span>(<span class="at">x =</span> Time, <span class="at">y =</span> ratio <span class="sc">*</span> <span class="fl">1.44</span>, <span class="at">color =</span> trophic_level)) <span class="sc">+</span></span>
-<span id="cb17-5"><a href="#cb17-5" aria-hidden="true" tabindex="-1"></a>  ggplot2<span class="sc">::</span><span class="fu">geom_point</span>() <span class="sc">+</span></span>
-<span id="cb17-6"><a href="#cb17-6" aria-hidden="true" tabindex="-1"></a>  ggplot2<span class="sc">::</span><span class="fu">geom_line</span>() <span class="sc">+</span></span>
-<span id="cb17-7"><a href="#cb17-7" aria-hidden="true" tabindex="-1"></a>  ggplot2<span class="sc">::</span><span class="fu">theme_bw</span>() <span class="sc">+</span></span>
-<span id="cb17-8"><a href="#cb17-8" aria-hidden="true" tabindex="-1"></a>  ggplot2<span class="sc">::</span><span class="fu">facet_grid</span>(<span class="at">rows =</span> ggplot2<span class="sc">::</span><span class="fu">vars</span>(transfer_efficiency),</span>
-<span id="cb17-9"><a href="#cb17-9" aria-hidden="true" tabindex="-1"></a>                      <span class="at">scales =</span> <span class="st">"free"</span>) <span class="sc">+</span></span>
-<span id="cb17-10"><a href="#cb17-10" aria-hidden="true" tabindex="-1"></a>  ggplot2<span class="sc">::</span><span class="fu">theme</span>(<span class="at">legend.position =</span> <span class="st">"top"</span>) <span class="sc">+</span></span>
-<span id="cb17-11"><a href="#cb17-11" aria-hidden="true" tabindex="-1"></a>    ggplot2<span class="sc">::</span><span class="fu">ggtitle</span>(i)</span>
-<span id="cb17-12"><a href="#cb17-12" aria-hidden="true" tabindex="-1"></a>  </span>
-<span id="cb17-13"><a href="#cb17-13" aria-hidden="true" tabindex="-1"></a>  <span class="fu">print</span>(plt)</span>
-<span id="cb17-14"><a href="#cb17-14" aria-hidden="true" tabindex="-1"></a>}</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb19"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> (i <span class="cf">in</span> <span class="fu">c</span>(<span class="st">"MAB"</span>, <span class="st">"GB"</span>, <span class="st">"GOM"</span>)) {</span>
+<span id="cb19-2"><a href="#cb19-2" aria-hidden="true" tabindex="-1"></a>  plt <span class="ot">&lt;-</span> total_data2 <span class="sc">|&gt;</span></span>
+<span id="cb19-3"><a href="#cb19-3" aria-hidden="true" tabindex="-1"></a>    dplyr<span class="sc">::</span><span class="fu">filter</span>(EPU <span class="sc">==</span> i) <span class="sc">|&gt;</span></span>
+<span id="cb19-4"><a href="#cb19-4" aria-hidden="true" tabindex="-1"></a>  ggplot2<span class="sc">::</span><span class="fu">ggplot</span>(ggplot2<span class="sc">::</span><span class="fu">aes</span>(<span class="at">x =</span> Time, <span class="at">y =</span> ratio <span class="sc">*</span> <span class="fl">1.44</span>, <span class="at">color =</span> <span class="fu">log</span>(ratio <span class="sc">*</span> <span class="fl">1.44</span>))) <span class="sc">+</span></span>
+<span id="cb19-5"><a href="#cb19-5" aria-hidden="true" tabindex="-1"></a>  ggplot2<span class="sc">::</span><span class="fu">geom_point</span>() <span class="sc">+</span></span>
+<span id="cb19-6"><a href="#cb19-6" aria-hidden="true" tabindex="-1"></a>  ggplot2<span class="sc">::</span><span class="fu">geom_line</span>() <span class="sc">+</span></span>
+<span id="cb19-7"><a href="#cb19-7" aria-hidden="true" tabindex="-1"></a>  ggplot2<span class="sc">::</span><span class="fu">theme_bw</span>() <span class="sc">+</span></span>
+<span id="cb19-8"><a href="#cb19-8" aria-hidden="true" tabindex="-1"></a>  ggplot2<span class="sc">::</span><span class="fu">facet_wrap</span>(<span class="at">facets =</span> ggplot2<span class="sc">::</span><span class="fu">vars</span>(<span class="fu">paste</span>(<span class="st">"TE:"</span>, transfer_efficiency, </span>
+<span id="cb19-9"><a href="#cb19-9" aria-hidden="true" tabindex="-1"></a>                                                   <span class="st">"TL:"</span>, trophic_level)),</span>
+<span id="cb19-10"><a href="#cb19-10" aria-hidden="true" tabindex="-1"></a>                        <span class="at">scales =</span> <span class="st">"free"</span>) <span class="sc">+</span></span>
+<span id="cb19-11"><a href="#cb19-11" aria-hidden="true" tabindex="-1"></a>  ggplot2<span class="sc">::</span><span class="fu">theme</span>(<span class="at">legend.position =</span> <span class="st">"bottom"</span>) <span class="sc">+</span> </span>
+<span id="cb19-12"><a href="#cb19-12" aria-hidden="true" tabindex="-1"></a>  viridis<span class="sc">::</span><span class="fu">scale_color_viridis</span>(<span class="at">discrete =</span> <span class="cn">FALSE</span>) <span class="sc">+</span></span>
+<span id="cb19-13"><a href="#cb19-13" aria-hidden="true" tabindex="-1"></a>  ggplot2<span class="sc">::</span><span class="fu">ggtitle</span>(i)</span>
+<span id="cb19-14"><a href="#cb19-14" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb19-15"><a href="#cb19-15" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb19-16"><a href="#cb19-16" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb19-17"><a href="#cb19-17" aria-hidden="true" tabindex="-1"></a>  <span class="fu">print</span>(plt)</span>
+<span id="cb19-18"><a href="#cb19-18" aria-hidden="true" tabindex="-1"></a>}</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 <div class="cell-output-display">
 <div>
 <figure class="figure">
-<p><img src="overview_eof_files/figure-html/unnamed-chunk-15-1.png" class="img-fluid figure-img" width="672"></p>
+<p><img src="overview_eof_files/figure-html/unnamed-chunk-17-1.png" class="img-fluid figure-img" width="672"></p>
 </figure>
 </div>
 </div>
 <div class="cell-output-display">
 <div>
 <figure class="figure">
-<p><img src="overview_eof_files/figure-html/unnamed-chunk-15-2.png" class="img-fluid figure-img" width="672"></p>
+<p><img src="overview_eof_files/figure-html/unnamed-chunk-17-2.png" class="img-fluid figure-img" width="672"></p>
 </figure>
 </div>
 </div>
 <div class="cell-output-display">
 <div>
 <figure class="figure">
-<p><img src="overview_eof_files/figure-html/unnamed-chunk-15-3.png" class="img-fluid figure-img" width="672"></p>
+<p><img src="overview_eof_files/figure-html/unnamed-chunk-17-3.png" class="img-fluid figure-img" width="672"></p>
 </figure>
 </div>
 </div>

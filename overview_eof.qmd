@@ -67,6 +67,43 @@ combined_landings |>
 
 ```
 
+### Trophic levels
+
+Trophic level by EPU is provided in Max's Rpath models.
+
+```{r}
+gb_tl <- neusRpath:::get_trophic_level(neusRpath::GB, epu_name = "GB")
+gom_tl <- neusRpath:::get_trophic_level(neusRpath::GOM, epu_name = "GOM")
+mab_tl <- neusRpath:::get_trophic_level(neusRpath::MAB, epu_name = "MAB")
+
+trophic_data <- dplyr::bind_rows(gb_tl, gom_tl, mab_tl) |>
+  # dplyr::arrange(EPU, Trophic_Level)
+  tidyr::pivot_wider(names_from = EPU, values_from = Trophic_Level) |>
+  dplyr::rowwise() |>
+  dplyr::mutate(mean = mean(dplyr::c_across(c(GB, GOM, MAB)), na.rm = TRUE)) |>
+  dplyr::ungroup() |>
+  dplyr::arrange(mean)
+
+trophic_data |>
+  # dplyr::select(-mean) |>
+  knitr::kable()
+```
+
+```{r}
+upper_tl <- trophic_data |>
+  dplyr::filter(Species == "Goosefish") |>
+  dplyr::pull(mean) |> 
+  round(digits = 2)
+lower_tl <- trophic_data |>
+  dplyr::filter(Species == "OceanQuahog") |>
+  dplyr::pull(mean) |> 
+  round(digits = 2)
+mean_tl <- mean(c(upper_tl, lower_tl)) |> 
+  round(digits = 2)
+```
+
+The harvested species with the lowest trophic level is ocean quahog, with a trophic level of `r lower_tl`. The harvested species with the highest trophic level is goosefish, with a trophic level of `r upper_tl`. If we average the two, we get a mean trophic level of `r mean_tl`. Let's try applying these ballpark numbers in our analyses below.
+
 ## Calculating the Primary Production Required
 
 PPR is calculated using the coefficients from Pauly and Christensen (1995) -- 10% transfer efficiency and mean trophic level of 3.5.
@@ -237,15 +274,15 @@ return_ppr <- function(landings, pp, te, tl) {
 total_data2 <- total_data |>
     dplyr::filter(EPU %in% c("GB", "GOM", "MAB")) |>
   dplyr::mutate(
-    ratio_te5_tl3.5 = return_ppr(landings, annual_chl_pp, te = 0.05, tl = 3.5),
-    ratio_te5_tl4 = return_ppr(landings, annual_chl_pp, te = 0.05, tl = 4),
-    ratio_te5_tl3 = return_ppr(landings, annual_chl_pp, te = 0.05, tl = 3),
-    ratio_te10_tl3.5 = return_ppr(landings, annual_chl_pp, te = 0.1, tl = 3.5),
-    ratio_te10_tl4 = return_ppr(landings, annual_chl_pp, te = 0.1, tl = 4),
-    ratio_te10_tl3 = return_ppr(landings, annual_chl_pp, te = 0.1, tl = 3),
-    ratio_te15_tl3.5 = return_ppr(landings, annual_chl_pp, te = 0.15, tl = 3.5),
-    ratio_te15_tl4 = return_ppr(landings, annual_chl_pp, te = 0.15, tl = 4),
-    ratio_te15_tl3 = return_ppr(landings, annual_chl_pp, te = 0.15, tl = 3),
+    ratio_te5_tl_lower = return_ppr(landings, annual_chl_pp, te = 0.05, tl = lower_tl),
+    ratio_te5_tl_mean = return_ppr(landings, annual_chl_pp, te = 0.05, tl = mean_tl),
+    ratio_te5_tl_upper = return_ppr(landings, annual_chl_pp, te = 0.05, tl = upper_tl),
+    ratio_te10_tl_lower = return_ppr(landings, annual_chl_pp, te = 0.1, tl = lower_tl),
+    ratio_te10_tl_mean = return_ppr(landings, annual_chl_pp, te = 0.1, tl = mean_tl),
+    ratio_te10_tl_upper = return_ppr(landings, annual_chl_pp, te = 0.1, tl = upper_tl),
+    ratio_te15_tl_lower = return_ppr(landings, annual_chl_pp, te = 0.15, tl = lower_tl),
+    ratio_te15_tl_mean = return_ppr(landings, annual_chl_pp, te = 0.15, tl = mean_tl),
+    ratio_te15_tl_upper = return_ppr(landings, annual_chl_pp, te = 0.15, tl = upper_tl),
   ) |>
   tidyr::pivot_longer(cols = starts_with("ratio"), names_to = "method", values_to = "ratio") |>
   dplyr::filter(method != "ratio") |>
@@ -255,24 +292,26 @@ total_data2 <- total_data |>
     grepl("te15", method) ~ "15%"
   ),
   trophic_level = dplyr::case_when(
-    grepl("tl3.5", method) ~ "3.5",
-    grepl("tl4", method) ~ "4",
-    grepl("tl3", method) ~ "3"
+    grepl("tl_lower", method) ~ lower_tl,
+    grepl("tl_mean", method) ~ mean_tl,
+    grepl("tl_upper", method) ~ upper_tl
   )) 
 ```
 
-```{r}
+```{r, fig.height = 6}
 for (i in c("MAB", "GB", "GOM")) {
   plt <- total_data2 |>
     dplyr::filter(EPU == i) |>
-  ggplot2::ggplot(ggplot2::aes(x = Time, y = ratio, color = trophic_level)) +
+  ggplot2::ggplot(ggplot2::aes(x = Time, y = ratio, color = log(ratio))) +
   ggplot2::geom_point() +
   ggplot2::geom_line() +
   ggplot2::theme_bw() +
-  ggplot2::facet_grid(rows = ggplot2::vars(transfer_efficiency),
-                      scales = "free") +
-  ggplot2::theme(legend.position = "top") +
-    ggplot2::ggtitle(i)
+  ggplot2::facet_wrap(facets = ggplot2::vars(paste("TE:", transfer_efficiency, 
+                                                   "TL:", trophic_level)),
+                        scales = "free") +
+  ggplot2::theme(legend.position = "bottom") + 
+  viridis::scale_color_viridis(discrete = FALSE) +
+  ggplot2::ggtitle(i)
   
   print(plt)
 }
@@ -280,18 +319,22 @@ for (i in c("MAB", "GB", "GOM")) {
 
 Assuming a 44% buffer for discards (as in Pauly and Christensen, Table 2):
 
-```{r}
+```{r, fig.height = 6}
 for (i in c("MAB", "GB", "GOM")) {
   plt <- total_data2 |>
     dplyr::filter(EPU == i) |>
-  ggplot2::ggplot(ggplot2::aes(x = Time, y = ratio * 1.44, color = trophic_level)) +
+  ggplot2::ggplot(ggplot2::aes(x = Time, y = ratio * 1.44, color = log(ratio * 1.44))) +
   ggplot2::geom_point() +
   ggplot2::geom_line() +
   ggplot2::theme_bw() +
-  ggplot2::facet_grid(rows = ggplot2::vars(transfer_efficiency),
-                      scales = "free") +
-  ggplot2::theme(legend.position = "top") +
-    ggplot2::ggtitle(i)
+  ggplot2::facet_wrap(facets = ggplot2::vars(paste("TE:", transfer_efficiency, 
+                                                   "TL:", trophic_level)),
+                        scales = "free") +
+  ggplot2::theme(legend.position = "bottom") + 
+  viridis::scale_color_viridis(discrete = FALSE) +
+  ggplot2::ggtitle(i)
+  
+  
   
   print(plt)
 }
